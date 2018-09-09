@@ -11,25 +11,25 @@ local Prefs = import('/lua/user/prefs.lua')
 function CreateResourceGroup(parent, groupLabel)
     local group = Group(parent)
     
-    # Group label
+    -- Group label
     group.Label = UIUtil.CreateText( group, groupLabel, 12, "Arial Bold" )
     group.Label:SetColor("FFBEBEBE")
     group.Label:SetDropShadow(true)
 
-    # Energy Icon
+    -- Energy Icon
     group.EnergyIcon = Bitmap(group)
     group.EnergyIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-energy_bmp.dds'))
 
-    # Energy Value
+    -- Energy Value
     group.EnergyValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
     group.EnergyValue:SetColor("FF00F000")
     group.EnergyValue:SetDropShadow(true)
 
-    # Mass Icon
+    -- Mass Icon
     group.MassIcon = Bitmap(group)
     group.MassIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-mass_bmp.dds'))
 
-    # Mass Value
+    -- Mass Value
     group.MassValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
     group.MassValue:SetColor("FF00F000")
     group.MassValue:SetDropShadow(true)
@@ -37,10 +37,10 @@ function CreateResourceGroup(parent, groupLabel)
     return group
 end
 
-# A 'Stat Group' is an icon or text label with a value on the right
-# e.g.  Health 3000
-#       Shield 6000
-#       <icon> 24
+-- A 'Stat Group' is an icon or text label with a value on the right
+-- e.g.  Health 3000
+--       Shield 6000
+--       <icon> 24
 function CreateStatGroup(parent, labelIcon)
     local group = Group(parent)
     
@@ -112,7 +112,7 @@ function Create(parent)
     View.Bracket:DisableHitTest()
     View.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
     
-    # Unit icon
+    -- Unit icon
     if false then
         View.UnitIcon = Bitmap(View)
     end
@@ -121,23 +121,23 @@ function Create(parent)
         View.UnitImg = Bitmap( View.BG )
     end
     
-    # Unit Description
+    -- Unit Description
     if not View.UnitShortDesc then
         View.UnitShortDesc = UIUtil.CreateText( View.BG, "", 10, UIUtil.bodyFont )
     end
     View.UnitShortDesc:SetColor("FFFF9E06")
 
-    # Cost
+    -- Cost
     if not View.BuildCostGroup then
         View.BuildCostGroup = CreateResourceGroup(View.BG, "<LOC uvd_0000>Build Cost (Rate)")
     end
 
-    # Upkeep
+    -- Upkeep
     if not View.UpkeepGroup then
         View.UpkeepGroup = CreateResourceGroup(View.BG, "<LOC uvd_0002>Yield")
     end
     
-    # Health stat
+    -- Health stat
     if not View.HealthStat then
         View.HealthStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/redcross.dds') )
     end
@@ -145,7 +145,7 @@ function Create(parent)
     if not View.ShieldStat then
         View.ShieldStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/shield.dds') )
     end
-    # Tme stat
+    -- Tme stat
     if not View.TimeStat then
         View.TimeStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit-over/icon-clock_bmp.dds') )
     end
@@ -156,7 +156,7 @@ function Create(parent)
     View.TechLevel:SetColor("FFFF9E06")
     
     if Prefs.GetOption('uvd_format') == 'full' then
-        # Description  "<LOC uvd_0003>Description"
+        -- Description  "<LOC uvd_0003>Description"
         if not View.Description then
             View.Description = CreateTextbox(View.BG, nil, true)
         end
@@ -185,7 +185,7 @@ function SetLayout()
     control.Width:Set( control.BG.Width )
     control.Height:Set( control.BG.Height )
     
-    # Main window background
+    -- Main window background
     LayoutHelpers.AtLeftTopIn( control.BG, control )
     
     LayoutHelpers.AtLeftTopIn(control.Bracket, control.BG, -6, 3)
@@ -206,51 +206,51 @@ function SetLayout()
     control.bracketMid.Top:Set(control.Bracket.Bottom)
     control.bracketMid.Bottom:Set(control.bracketMax.Top)
 
-    # Unit Image
+    -- Unit Image
     LayoutHelpers.AtLeftTopIn( control.UnitImg, control.BG, 12, 36 )
     control.UnitImg.Height:Set(46)
     control.UnitImg.Width:Set(48)
     
-    # Tech Level Text
+    -- Tech Level Text
     LayoutHelpers.CenteredBelow(control.TechLevel, control.UnitImg)
     
-    # Unit Description
+    -- Unit Description
     LayoutHelpers.AtLeftTopIn( control.UnitShortDesc, control.BG, 20, 13 )
     control.UnitShortDesc:SetClipToWidth(true)
     control.UnitShortDesc.Right:Set(function() return control.BG.Right() - 15 end)
 
-    # Time stat
+    -- Time stat
     LayoutHelpers.Below( control.TimeStat, control.UnitImg, 4 )
     LayoutHelpers.AtLeftIn(control.TimeStat, control.UnitImg, -2)
     control.TimeStat.Height:Set(control.TimeStat.Label.Height)
     LayoutStatGroup( control.TimeStat )
     
-    # Build Resource Group
+    -- Build Resource Group
     LayoutHelpers.AtLeftTopIn( control.BuildCostGroup, control.BG, 70, 34 )
     control.BuildCostGroup.Width:Set( 115 )
     LayoutResourceGroup( control.BuildCostGroup )
     control.BuildCostGroup.Bottom:Set( function() return control.BuildCostGroup.MassValue.Bottom() + 1 end )
 
-    # Upkeep Resource Group
+    -- Upkeep Resource Group
     LayoutHelpers.RightOf( control.UpkeepGroup, control.BuildCostGroup )
     control.UpkeepGroup.Width:Set( 55 )
     control.UpkeepGroup.Bottom:Set( control.BuildCostGroup.Bottom )
     LayoutResourceGroup( control.UpkeepGroup )
     
-    # health stat
+    -- health stat
     LayoutHelpers.RightOf( control.HealthStat, control.UpkeepGroup )
     LayoutHelpers.AtTopIn( control.HealthStat, control.UpkeepGroup, 22 )
     control.HealthStat.Height:Set(control.HealthStat.Label.Height)
     LayoutStatGroup( control.HealthStat )
     
-    # shield stat
+    -- shield stat
     LayoutHelpers.RightOf( control.ShieldStat, control.UpkeepGroup, -2 )
     LayoutHelpers.AtTopIn( control.ShieldStat, control.UpkeepGroup, 42 )
     control.ShieldStat.Height:Set(control.ShieldStat.Label.Height)
     LayoutStatGroup( control.ShieldStat )
     
     if control.Description then
-        # Description
+        -- Description
         control.Description.Left:Set(function() return control.BG.Right() - 2 end)
         control.Description.Bottom:Set(function() return control.BG.Bottom() - 2 end)
         control.Description.Width:Set(400)
