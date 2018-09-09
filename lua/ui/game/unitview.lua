@@ -80,7 +80,7 @@ function OverchargeCanKill()
                 else
                     unitHP[1] = nil 
                     return false
-                end                    
+                end
             end 
         end
     end
@@ -356,24 +356,22 @@ function UpdateWindow(info)
             controls.fuelBar:Show()
             controls.fuelBar:SetValue(info.fuelRatio)
         end
-		
-	if info.shieldRatio > 0 and info.fuelRatio > 0 then
-	    controls.store = 1
-	else
-	    controls.store = 0
-	end
-		
+        
+    if info.shieldRatio > 0 and info.fuelRatio > 0 then
+        controls.store = 1
+    else
+        controls.store = 0
+    end
+        
         if info.health then
             controls.healthBar:Show()
-
             -- Removing a MaxHealth buff causes health > maxhealth until a damage event for some reason
             info.health = math.min(info.health, info.maxHealth)
-	    
+        
         if not info.userUnit then
             unitHP[1] = info.health
             unitHP.blueprintId = info.blueprintId
-        end	
-
+        end
             controls.healthBar:SetValue(info.health/info.maxHealth)
             if info.health/info.maxHealth > .75 then
                 controls.healthBar._bar:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/healthbar_green.dds'))
@@ -438,7 +436,7 @@ function UpdateWindow(info)
                         text = massKilledTrue 
                     end
                     
-                    controls.nextVet:SetText(text)    
+                    controls.nextVet:SetText(text)
                 else
                     controls.vetBar:Hide()
                 end
@@ -671,21 +669,21 @@ function CreateUI()
                 self:SetAlpha(1, true)
             end
             import(UIUtil.GetLayoutFilename('unitview')).PositionWindow()
-	    import(UIUtil.GetLayoutFilename('unitview')).UpdateStatusBars(controls)		
+        import(UIUtil.GetLayoutFilename('unitview')).UpdateStatusBars(controls)        
         elseif self:GetAlpha() > 0 then
             self:SetAlpha(0, true)
         end
     end
 
     -- This section is for the small icons showing what active enhancements an ACU has
-	controls.enhancements = {}
-	controls.enhancements['RCH'] = Bitmap(controls.bg)
-	controls.enhancements['Back'] = Bitmap(controls.bg)
-	controls.enhancements['LCH'] = Bitmap(controls.bg)
+    controls.enhancements = {}
+    controls.enhancements['RCH'] = Bitmap(controls.bg)
+    controls.enhancements['Back'] = Bitmap(controls.bg)
+    controls.enhancements['LCH'] = Bitmap(controls.bg)
 
-	LayoutHelpers.AtLeftTopIn(controls.enhancements['RCH'], controls.bg, 10, -30)
-	LayoutHelpers.AtLeftTopIn(controls.enhancements['Back'], controls.bg, 42, -30)
-	LayoutHelpers.AtLeftTopIn(controls.enhancements['LCH'], controls.bg, 74, -30)
+    LayoutHelpers.AtLeftTopIn(controls.enhancements['RCH'], controls.bg, 10, -30)
+    LayoutHelpers.AtLeftTopIn(controls.enhancements['Back'], controls.bg, 42, -30)
+    LayoutHelpers.AtLeftTopIn(controls.enhancements['LCH'], controls.bg, 74, -30)
 end
 
 function OnSelection(units)

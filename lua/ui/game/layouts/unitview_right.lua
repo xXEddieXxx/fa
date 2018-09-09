@@ -114,7 +114,7 @@ function SetLayout()
 
     SetBG(controls)
 
-    if options.gui_detailed_unitview != 0 then
+    if options.gui_detailed_unitview ~= 0 then
         LayoutHelpers.AtLeftTopIn(controls.healthBar, controls.bg, 66, 25)
         LayoutHelpers.Below(controls.shieldBar, controls.healthBar)
         controls.shieldBar.Height:Set(14)
@@ -157,11 +157,11 @@ function PositionWindow()
 end
 
 function UpdateStatusBars(controls)
-    if options.gui_detailed_unitview != 0 and controls.store == 1 then
-        LayoutHelpers.CenteredBelow(controls.fuelBar, controls.shieldBar,3)
-        LayoutHelpers.CenteredBelow(controls.shieldText, controls.fuelBar,-2.5)
-    elseif options.gui_detailed_unitview != 0 then
-        LayoutHelpers.CenteredBelow(controls.fuelBar, controls.shieldBar,0)
-        LayoutHelpers.CenteredBelow(controls.shieldText, controls.shieldBar,0)
+    if options.gui_detailed_unitview ~= 0 and controls.store == 1 then
+        LayoutHelpers.CenteredBelow(controls.fuelBar, controls.shieldBar, 3)
+        LayoutHelpers.CenteredBelow(controls.shieldText, controls.fuelBar, -2.5)
+    elseif options.gui_detailed_unitview ~= 0 then
+        LayoutHelpers.CenteredBelow(controls.fuelBar, controls.shieldBar, 0)
+        LayoutHelpers.CenteredBelow(controls.shieldText, controls.shieldBar, 0)
     end
 end
