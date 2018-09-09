@@ -7,12 +7,11 @@ local GameCommon = import('/lua/ui/game/gamecommon.lua')
 local ItemList = import('/lua/maui/itemlist.lua').ItemList
 local Prefs = import('/lua/user/prefs.lua')
 
-
 function CreateResourceGroup(parent, groupLabel)
     local group = Group(parent)
     
     -- Group label
-    group.Label = UIUtil.CreateText( group, groupLabel, 12, "Arial Bold" )
+    group.Label = UIUtil.CreateText(group, groupLabel, 12, "Arial Bold")
     group.Label:SetColor("FFBEBEBE")
     group.Label:SetDropShadow(true)
 
@@ -21,7 +20,7 @@ function CreateResourceGroup(parent, groupLabel)
     group.EnergyIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-energy_bmp.dds'))
 
     -- Energy Value
-    group.EnergyValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
+    group.EnergyValue = UIUtil.CreateText(group, "0", 12, UIUtil.bodyFont)
     group.EnergyValue:SetColor("FF00F000")
     group.EnergyValue:SetDropShadow(true)
 
@@ -30,7 +29,7 @@ function CreateResourceGroup(parent, groupLabel)
     group.MassIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-mass_bmp.dds'))
 
     -- Mass Value
-    group.MassValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
+    group.MassValue = UIUtil.CreateText(group, "0", 12, UIUtil.bodyFont)
     group.MassValue:SetColor("FF00F000")
     group.MassValue:SetDropShadow(true)
 
@@ -47,7 +46,7 @@ function CreateStatGroup(parent, labelIcon)
     group.Label = Bitmap(group)
     group.Label:SetTexture(labelIcon)
 
-    group.Value = UIUtil.CreateText( group, "", 14, UIUtil.bodyFont )
+    group.Value = UIUtil.CreateText(group, "", 14, UIUtil.bodyFont)
     group.Value:SetColor("FF00F000")
     group.Value:SetDropShadow(true)
 
@@ -88,7 +87,7 @@ function CreateTextbox(parent, label, bigBG)
     end
 
     group.Value = {}
-    group.Value[1] = UIUtil.CreateText( group, "", 12, UIUtil.bodyFont)
+    group.Value[1] = UIUtil.CreateText(group, "", 12, UIUtil.bodyFont)
     
     return group
 end
@@ -118,12 +117,12 @@ function Create(parent)
     end
     
     if not View.UnitImg then
-        View.UnitImg = Bitmap( View.BG )
+        View.UnitImg = Bitmap(View.BG)
     end
     
     -- Unit Description
     if not View.UnitShortDesc then
-        View.UnitShortDesc = UIUtil.CreateText( View.BG, "", 10, UIUtil.bodyFont )
+        View.UnitShortDesc = UIUtil.CreateText(View.BG, "", 10, UIUtil.bodyFont)
     end
     View.UnitShortDesc:SetColor("FFFF9E06")
 
@@ -139,15 +138,15 @@ function Create(parent)
     
     -- Health stat
     if not View.HealthStat then
-        View.HealthStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/redcross.dds') )
+        View.HealthStat = CreateStatGroup(View.BG, UIUtil.UIFile('/game/unit_view_icons/redcross.dds'))
     end
     
     if not View.ShieldStat then
-        View.ShieldStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/shield.dds') )
+        View.ShieldStat = CreateStatGroup(View.BG, UIUtil.UIFile('/game/unit_view_icons/shield.dds'))
     end
-    -- Tme stat
+    -- Time stat
     if not View.TimeStat then
-        View.TimeStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit-over/icon-clock_bmp.dds') )
+        View.TimeStat = CreateStatGroup(View.BG, UIUtil.UIFile('/game/unit-over/icon-clock_bmp.dds'))
     end
     
     if not View.TechLevel then
@@ -187,11 +186,11 @@ function SetLayout()
         LayoutHelpers.AtBottomIn(control, control:GetParent(), 140)
         LayoutHelpers.AtLeftIn(control, control:GetParent(), 18)
     end
-    control.Width:Set( control.BG.Width )
-    control.Height:Set( control.BG.Height )
+    control.Width:Set(control.BG.Width)
+    control.Height:Set(control.BG.Height)
     
     -- Main window background
-    LayoutHelpers.AtLeftTopIn( control.BG, control )
+    LayoutHelpers.AtLeftTopIn(control.BG, control)
     
     LayoutHelpers.AtLeftTopIn(control.Bracket, control.BG, -19, -2)
     control.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
@@ -206,7 +205,7 @@ function SetLayout()
     end
     
     -- Unit Image
-    LayoutHelpers.AtLeftTopIn( control.UnitImg, control.BG, 12, 36 )
+    LayoutHelpers.AtLeftTopIn(control.UnitImg, control.BG, 12, 36)
     control.UnitImg.Height:Set(46)
     control.UnitImg.Width:Set(48)
     
@@ -214,39 +213,39 @@ function SetLayout()
     LayoutHelpers.CenteredBelow(control.TechLevel, control.UnitImg)
     
     -- Unit Description
-    LayoutHelpers.AtLeftTopIn( control.UnitShortDesc, control.BG, 20, 13 )
+    LayoutHelpers.AtLeftTopIn(control.UnitShortDesc, control.BG, 20, 13)
     control.UnitShortDesc:SetClipToWidth(true)
     control.UnitShortDesc.Right:Set(function() return control.BG.Right() - 15 end)
 
     -- Time stat
-    LayoutHelpers.Below( control.TimeStat, control.UnitImg, 4 )
+    LayoutHelpers.Below(control.TimeStat, control.UnitImg, 4)
     LayoutHelpers.AtLeftIn(control.TimeStat, control.UnitImg, -2)
     control.TimeStat.Height:Set(control.TimeStat.Label.Height)
-    LayoutStatGroup( control.TimeStat )
+    LayoutStatGroup(control.TimeStat)
     
     -- Build Resource Group
-    LayoutHelpers.AtLeftTopIn( control.BuildCostGroup, control.BG, 70, 34 )
-    control.BuildCostGroup.Width:Set( 115 )
-    LayoutResourceGroup( control.BuildCostGroup )
-    control.BuildCostGroup.Bottom:Set( function() return control.BuildCostGroup.MassValue.Bottom() + 1 end )
+    LayoutHelpers.AtLeftTopIn(control.BuildCostGroup, control.BG, 70, 34)
+    control.BuildCostGroup.Width:Set(115)
+    LayoutResourceGroup(control.BuildCostGroup)
+    control.BuildCostGroup.Bottom:Set(function() return control.BuildCostGroup.MassValue.Bottom() + 1 end)
 
     -- Upkeep Resource Group
-    LayoutHelpers.RightOf( control.UpkeepGroup, control.BuildCostGroup )
-    control.UpkeepGroup.Width:Set( 55 )
-    control.UpkeepGroup.Bottom:Set( control.BuildCostGroup.Bottom )
-    LayoutResourceGroup( control.UpkeepGroup )
+    LayoutHelpers.RightOf(control.UpkeepGroup, control.BuildCostGroup)
+    control.UpkeepGroup.Width:Set(55)
+    control.UpkeepGroup.Bottom:Set(control.BuildCostGroup.Bottom)
+    LayoutResourceGroup(control.UpkeepGroup)
     
     -- health stat
-    LayoutHelpers.RightOf( control.HealthStat, control.UpkeepGroup )
-    LayoutHelpers.AtTopIn( control.HealthStat, control.UpkeepGroup, 22 )
+    LayoutHelpers.RightOf(control.HealthStat, control.UpkeepGroup)
+    LayoutHelpers.AtTopIn(control.HealthStat, control.UpkeepGroup, 22)
     control.HealthStat.Height:Set(control.HealthStat.Label.Height)
-    LayoutStatGroup( control.HealthStat )
+    LayoutStatGroup(control.HealthStat)
     
     -- shield stat
-    LayoutHelpers.RightOf( control.ShieldStat, control.UpkeepGroup, -2 )
-    LayoutHelpers.AtTopIn( control.ShieldStat, control.UpkeepGroup, 42 )
+    LayoutHelpers.RightOf(control.ShieldStat, control.UpkeepGroup, -2)
+    LayoutHelpers.AtTopIn(control.ShieldStat, control.UpkeepGroup, 42)
     control.ShieldStat.Height:Set(control.ShieldStat.Label.Height)
-    LayoutStatGroup( control.ShieldStat )
+    LayoutStatGroup(control.ShieldStat)
     
     if control.Description then
         -- Description
@@ -260,18 +259,18 @@ end
 
 function LayoutResourceGroup(group)
     
-    LayoutHelpers.AtTopIn( group.Label, group )
-    LayoutHelpers.AtLeftIn( group.Label, group )
+    LayoutHelpers.AtTopIn(group.Label, group)
+    LayoutHelpers.AtLeftIn(group.Label, group)
 
-    LayoutHelpers.Below( group.MassIcon, group.Label, 5 )
-    group.EnergyIcon.Left:Set( function() return group.Label.Left() - 4 end )
+    LayoutHelpers.Below(group.MassIcon, group.Label, 5)
+    group.EnergyIcon.Left:Set(function() return group.Label.Left() - 4 end)
 
-    LayoutHelpers.RightOf( group.EnergyValue, group.EnergyIcon, 1 )
-    group.EnergyValue.Top:Set( function() return group.EnergyIcon.Top() + 1 end )
+    LayoutHelpers.RightOf(group.EnergyValue, group.EnergyIcon, 1)
+    group.EnergyValue.Top:Set(function() return group.EnergyIcon.Top() + 1 end)
 
-    LayoutHelpers.RightOf( group.MassValue, group.MassIcon, 1 )
-    group.MassValue.Right:Set( function() return group.Label.Right() end )
-    group.MassValue.Top:Set( function() return group.MassIcon.Top() + 1 end )
+    LayoutHelpers.RightOf(group.MassValue, group.MassIcon, 1)
+    group.MassValue.Right:Set(function() return group.Label.Right() end)
+    group.MassValue.Top:Set(function() return group.MassIcon.Top() + 1 end)
 
     LayoutHelpers.Below(group.EnergyIcon, group.MassIcon, 5)
 end
