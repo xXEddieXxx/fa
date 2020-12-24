@@ -165,7 +165,7 @@ function RemoveRestriction(cats, army)
     ResolveRestrictions(false, cats, army)
 end
 
--- Noggles whether or not to ignore all restrictions
+-- Toggles whether or not to ignore all restrictions
 -- Note, this function is useful when trying to transfer restricted units between armies
 function IgnoreRestrictions(isIgnored)
     bps.Ignored = isIgnored
@@ -202,73 +202,13 @@ function SetRestrictions(blueprintIDs)
     restrictions = blueprintIDs
 end
 
--- Sorts unit blueprints based on build priority
-local function SortUnits(bp1, bp2)
-    local v1 = bp1.BuildIconSortPriority or bp1.StrategicIconSortPriority
-    local v2 = bp2.BuildIconSortPriority or bp2.StrategicIconSortPriority
-    if v1 >= v2 then
-        return false
-    else
-        return true
-    end
-end
-
--- Checks for valid unit blueprints (not projectiles/effects)
-local IsValidUnit = import('/lua/ui/lobby/UnitsAnalyzer.lua').IsValidUnit
-
--- Gets blueprints that can be upgraded, e.g. MEX, Shield, Radar structures
-local function GetUnitsUpgradable()
-    local units = {}
-
-    if not bps.ids then
-        WARN('ERROR - Trying to fetch upgradable units from an empty list. That is impossible!')
-    end
-
-    for _, id in bps.ids do
-        local bp = __blueprints[id]
-
-        -- Check for valid/upgradeable blueprints
-        if bp and bp.General and IsValidUnit(bp, id) and
-            bp.General.UpgradesFrom ~= '' and
-            bp.General.UpgradesFrom ~= 'none' then
-
-            if not bp.CategoriesHash['BUILTBYTIER1ENGINEER'] and
-               not bp.CategoriesHash['BUILTBYTIER2ENGINEER'] and
-               not bp.CategoriesHash['BUILTBYTIER3ENGINEER'] and
-               not bp.CategoriesHash['BUILTBYTIER3COMMANDER'] then
-
-               local unit = table.deepcopy(bp)
-               unit.id = id -- Save id for a reference
-               table.insert(units, unit)
-            end
-        end
-    end
-
-    -- Ensure units are sorted in increasing order of upgrades
-    -- This increase performance when checking for breaks in upgrade-chain
-    table.sort(units, SortUnits)
-
-    return units
-end
-
--- Gets ids of valid units
-local function GetUnitsIds()
-    local units = {}
-    for id, bp in __blueprints do
-        if IsValidUnit(bp, id) then
-            table.insert(units, id)
-        end
-    end
-    return units
-end
-
 -- Resolves category restrictions to a table with ids of restricted units
 -- e.g. restrictions = {categories.TECH1} ->
 function ResolveRestrictions(toggle, cats, army)
     -- Initialize blueprints info only once
     if table.getsize(bps.ids) == 0 or table.getsize(bps.upgradeable) == 0 then
-        bps.ids = GetUnitsIds()
-        bps.upgradeable = GetUnitsUpgradable()
+        bps.ids = import('/lua/system/BlueprintsAnalyzer.lua').GetUnitsIDs(__blueprints)
+        bps.upgradeable = import('/lua/system/BlueprintsAnalyzer.lua').GetUnitsUpgradable(__blueprints)
     end
 
     -- Find ids of units restricted by global categories
@@ -293,19 +233,19 @@ function ResolveRestrictions(toggle, cats, army)
 
     -- Check for breaks in upgrade-chain of upgradeable units,
     -- e.g. T2 MEX restriction should also restrict T3 MEX
-    -- We only want to do this when restricting, not releasing.
+    -- We only want to do this when restricting, not un-restricting.
     if toggle then
         for _, bp in bps.upgradeable do
             local from = bp.General.UpgradesFrom
 
             -- Check if source blueprint is restricted by global restriction
             if restrictions.Global[from] then
-               restrictions.Global[bp.id] = toggle
+               restrictions.Global[bp.ID] = toggle
             end
 
             -- Check if source blueprint is restricted by army restriction
             if restrictions.PerArmy[army][from] then
-               restrictions.PerArmy[army][bp.id] = toggle
+               restrictions.PerArmy[army][bp.ID] = toggle
             end
         end
     end

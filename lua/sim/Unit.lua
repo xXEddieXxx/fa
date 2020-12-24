@@ -1302,6 +1302,18 @@ Unit = Class(moho.unit_methods) {
             mass = mass * 0.5
         end
 
+--        local combatCategories = categories.ANTIAIR + categories.ANTINAVY + categories.DIRECTFIRE +  categories.INDIRECTFIRE + categories.GROUNDATTACK
+--        if not self.gainsVeterancy then
+--            -- Non-combat structures give less veterancy
+--            if EntityCategoryContains(categories.STRUCTURE - combatCategories, self) then
+--                mass = mass * 0.25 -- SUGGESTION decrease to 25%
+--            end
+--            -- Non-combat units give less veterancy
+--            if EntityCategoryContains(categories.ENGINEER - combatCategories, self) then
+--                mass = mass * 0.1 -- SUGGESTION 10%
+--            end
+--        end
+
         for _, data in self.Instigators do
             local unit = data.unit
             -- Make sure the unit is something which can vet, and is not maxed
@@ -2100,8 +2112,10 @@ Unit = Class(moho.unit_methods) {
         -- Do all this here so we only have to do for things which get completed
         -- Don't need to track damage for things which cannot attack!
         self.gainsVeterancy = self:ShouldUseVetSystem()
-
-        if self.gainsVeterancy then
+        
+        -- HUSSAR added fix for nil reference exception
+        if self ~= nil and self.Sync ~= nil and self.gainsVeterancy then
+            --WARN("OnStopBeingBuilt " .. tostring(type(self)) .. " " ..   tostring(type(self.Sync)))
             self.Sync.totalMassKilled = 0
             self.Sync.totalMassKilledTrue = 0
             self.Sync.VeteranLevel = 0

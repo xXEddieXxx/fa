@@ -17,14 +17,18 @@
 --
 -- How mods can affect blueprints
 --
---   First, a mod can simply add a new blueprint file that defines a new blueprint.
+--   First, a mod can simply add a new blueprint file that defines a new blueprint, e.g.
+--   /mods/ModName/units/URL0999/URL0999_unit.bp    <-- new Cybran land unit
+--   /mods/ModName/units/URL0999/URL0999_script.lua
 --
 --   Second, a mod can contain a blueprint with the same ID as an existing blueprint.
 --   In this case it will completely override the original blueprint. Note that in
 --   order to replace an original non-unit blueprint, the mod must set the "BlueprintId"
 --   field to name the blueprint to be replaced. Otherwise the BlueprintId is defaulted
 --   off the source file name. (Units don't have this problem because the BlueprintId is
---   shortened and doesn't include the original path).
+--   shortened and doesn't include the original path), e.g.
+--   /mods/ModName/units/URL0001/URL0001_unit.bp    <-- Cybran ACU
+--   /mods/ModName/units/URL0001/URL0001_script.lua
 --
 --   Third, a mod can contain a blueprint with the same ID as an existing blueprint,
 --   and with the special field "Merge = true". This causes the mod to be merged with,
@@ -32,7 +36,7 @@
 --
 --   Finally, a mod can hook the ModBlueprints() function which manipulates the
 --   blueprints table in arbitrary ways.
---      1. create a file /mod/s.../hook/system/Blueprints.lua
+--      1. create a file /mod/ModName/hook/system/Blueprints.lua
 --      2. override ModBlueprints(all_bps) in that file to manipulate the blueprints
 --
 -- Reloading of changed blueprints
@@ -47,14 +51,21 @@
 --   default to its old value, not to 0 or its normal default.
 --
 
+WARN('Blueprints.lua...') 
+-- importing module for verifying unit blueprints for issues/mistakes/misconfiguration
+-- when they are loaded by the game or
+-- when unit blueprint is re-loaded by ReloadBlueprint()
+local BV = import('/lua/system/BlueprintsVerifier.lua')
+
 local sub = string.sub
 local gsub = string.gsub
 local lower = string.lower
 local getinfo = debug.getinfo
 local here = getinfo(1).source
 
-local original_blueprints
-local current_mod
+-- a table for storing all types of blueprints when they are being loaded
+local original_blueprints = nil
+local current_mod = nil
 
 local function InitOriginalBlueprints()
     current_mod = nil
@@ -85,6 +96,8 @@ local function GetSource()
 end
 
 local function StoreBlueprint(group, bp)
+    -- saving source type for quick filtering of blueprints, e.g. unit.bp vs projectile.bp
+    bp.SourceType = group
     local id = bp.BlueprintId
     local t = original_blueprints[group]
 
@@ -126,6 +139,7 @@ local function SetShortId(bp)
     bp.Source = bp.Source or GetSource()
     bp.BlueprintId = bp.BlueprintId or
         gsub(lower(bp.Source), "^.*/([^/]+)_[a-z]+%.bp$", "%1")
+    bp.ID = bp.BlueprintId -- Save ID for quick lookup
 end
 --
 -- If the bp contains a 'Mesh' section, move that over to a separate Mesh blueprint, and
@@ -206,8 +220,17 @@ function ExtractBuildMeshBlueprint(bp)
         local meshid = bp.Display.MeshBlueprint
         if not meshid then return end
 
+--        if bp.BlueprintId == 'url0001' then
+--            WARN("url0001 ExtractBuild=" .. bp.Economy.MaxBuildDistance or 0)
+--        end
+
         local meshbp = original_blueprints.Mesh[meshid]
         if not meshbp then return end
+
+--        if bp.BlueprintId == 'url0001' then
+--            WARN("url0001 ExtractMesh=" .. meshid)
+--            --table.print(meshbp, 'meshbp', WARN)
+--        end
 
         local shadername = FactionName .. 'Build'
         local secondaryname = '/textures/effects/' .. FactionName .. 'BuildSpecular.dds'
@@ -237,8 +260,35 @@ end
 function UnitBlueprint(bp)
     -- save info about mods that changed this blueprint
     bp.Mod = current_mod
+    
+    -- copying some tables because they are converted to binary when registering units
+    -- this will keep a copy of this table in hash format and allow quick look up of 
+    -- their values and thus improve performance 
+    if bp.General.CommandCaps then
+       bp.General.CommandHash = table.copy(bp.General.CommandCaps)
+    end
+    if bp.General.OrderOverrides then
+       bp.General.OrderOverridesHash = table.deepcopy(bp.General.OrderOverrides)
+    end
+    if bp.General.ToggleCaps then
+       bp.General.ToggleHash = table.copy(bp.General.ToggleCaps)
+    end
+
+    if bp.Physics.BuildOnLayerCaps then
+       bp.Physics.BuildOnLayerHash = table.copy(bp.Physics.BuildOnLayerCaps)
+    end
+
+    if bp.Display.MovementEffects then
+       bp.Display.MovementHash = table.deepcopy(bp.Display.MovementEffects)
+    end
+
     SetShortId(bp)
     StoreBlueprint('Unit', bp)
+
+--    if bp.BlueprintId == 'url0001' then
+--        WARN("url0001 UnitBlueprint=" .. bp.Economy.MaxBuildDistance or 0)
+--    end
+
 end
 
 function PropBlueprint(bp)
@@ -271,6 +321,9 @@ end
 function ExtractAllMeshBlueprints()
 
     for id,bp in original_blueprints.Unit do
+--        if bp.BlueprintId == 'url0001' then
+--            WARN("url0001 ExtractAllMeshBlueprints=" .. bp.Economy.MaxBuildDistance or 0)
+--        end
         ExtractMeshBlueprint(bp)
         ExtractWreckageBlueprint(bp)
         ExtractBuildMeshBlueprint(bp)
@@ -290,6 +343,9 @@ function RegisterAllBlueprints(blueprints)
 
     local function RegisterGroup(g, fun)
         for id,bp in sortedpairs(g) do
+--            if bp.BlueprintId == 'url0001' then
+--                WARN("url0001 RegisterAllBlueprints=" .. bp.Economy.MaxBuildDistance or 0)
+--            end
             fun(g[id])
         end
     end
@@ -478,7 +534,7 @@ function PreModBlueprints(all_bps)
             }
         end
 
-        -- Create new keys so that unit scripting can more easily reference the most common data needed
+        -- Create new keys so that unit scripting can easily reference the most common data needed
         for _, category in {'EXPERIMENTAL', 'SUBCOMMANDER', 'COMMAND', 'TECH1', 'TECH2', 'TECH3'} do
             if bp.CategoriesHash[category] then
                 bp.TechCategory = category
@@ -538,13 +594,13 @@ function PreModBlueprints(all_bps)
                 br = (range * tracking)
             end
 
-            if br then
-                if not bp.AI then bp.AI = {} end
-                bp.AI.GuardScanRadius = br
-                if not bp.AI.GuardReturnRadius then
-                    bp.AI.GuardReturnRadius = 3
-                end
-            end
+--            if br then
+--                if not bp.AI then bp.AI = {} end
+--                bp.AI.GuardScanRadius = br
+--                if not bp.AI.GuardReturnRadius then
+--                    bp.AI.GuardReturnRadius = 3
+--                end
+--            end
         end
         -- synchronizing bp.Categories with bp.CategoriesHash for compatibility
         bp.Categories = table.unhash(bp.CategoriesHash)
@@ -667,17 +723,29 @@ function LoadBlueprints(pattern, directories, mods, skipGameFiles, skipExtractio
     stats.UnitsMod = table.getsize(original_blueprints.Unit) - stats.UnitsOrg
     stats.ProjsMod = table.getsize(original_blueprints.Projectile) - stats.ProjsOrg
 
+    BlueprintLoaderUpdateProgress()
+    LOG('Blueprints Modding...')
+    -- call modding functions that might update blueprint files
+    PreModBlueprints(original_blueprints)
+    ModBlueprints(original_blueprints)
+    PostModBlueprints(original_blueprints)
+
     if not skipExtraction then
         BlueprintLoaderUpdateProgress()
         LOG('Blueprints Extracting mesh...')
         ExtractAllMeshBlueprints()
     end
+    
+--    for _, bp in original_blueprints.Unit do
+--        ExtractCloakMeshBlueprint(bp)
+--    end
 
-    BlueprintLoaderUpdateProgress()
-    LOG('Blueprints Modding...')
-    PreModBlueprints(original_blueprints)
-    ModBlueprints(original_blueprints)
-    PostModBlueprints(original_blueprints)
+--    BlueprintLoaderUpdateProgress()
+--    LOG('Blueprints Modding...')
+--    -- call modding functions that might update blueprint files
+--    PreModBlueprints(original_blueprints)
+--    ModBlueprints(original_blueprints)
+--    PostModBlueprints(original_blueprints)
 
     stats.UnitsTotal = table.getsize(original_blueprints.Unit)
     stats.UnitsPreset = stats.UnitsTotal - stats.UnitsOrg - stats.UnitsMod
@@ -691,6 +759,10 @@ function LoadBlueprints(pattern, directories, mods, skipGameFiles, skipExtractio
         LOG('Blueprints Loading... completed: ' .. stats.ProjsOrg .. ' original and '
                                                 .. stats.ProjsMod .. ' modded projectiles')
     end
+    
+    -- doscript '/lua/system/bpVerifier.lua'
+    --TODO-HUSSAR enable
+    --BV.Verify(original_blueprints)
 
     if not skipRegistration then
         BlueprintLoaderUpdateProgress()
@@ -704,12 +776,24 @@ end
 
 -- Reload a single blueprint
 function ReloadBlueprint(file)
+
+    WARN('Blueprints.lua ReloadBlueprint ' ) 
+  
     InitOriginalBlueprints()
 
     safecall("Blueprints Reloading... "..file, doscript, file)
 
+    BV.Verify(original_blueprints.Unit)
+
     ExtractAllMeshBlueprints()
+
+    -- call modding functions that might update blueprint file loaded above
+    --PreModBlueprints(original_blueprints)
     ModBlueprints(original_blueprints)
+    --PostModBlueprints(original_blueprints)
+    
+    --ExtractAllMeshBlueprints()
+
     RegisterAllBlueprints(original_blueprints)
     original_blueprints = nil
 end

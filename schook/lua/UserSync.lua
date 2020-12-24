@@ -2,7 +2,11 @@
 local baseOnSync = OnSync
 OnSync = function()
     baseOnSync()
-    import('/lua/UserCamera.lua').ProcessCameraRequests(Sync.CameraRequests)
+     
+    -- HUSSAR added fix for nil reference exception
+    if Sync.CameraRequests then
+        import('/lua/UserCamera.lua').ProcessCameraRequests(Sync.CameraRequests)
+    end
 
     if Sync.FocusArmyChanged then
         import('/lua/ui/game/avatars.lua').FocusArmyChanged()

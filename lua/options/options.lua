@@ -83,6 +83,186 @@ options = {
         key = 'gameplay',
         items = {
             {
+                title = "<LOC OPTIONS_0316>Unit Tooltip Shows Abilities",
+                tip =   "<LOC OPTIONS_0317>TODO",
+                key = 'uvd_show_abilities',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            }, 
+            {
+                title = "<LOC OPTIONS_0318>Unit Tooltip Shows Description",
+                tip =   "<LOC OPTIONS_0319>TODO",
+                key = 'uvd_show_description',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            }, 
+            {
+                title = "<LOC OPTIONS_0310>Unit Tooltip Renders With Opacity",
+                tip =   "<LOC OPTIONS_0311>TODO",
+                key = 'uvd_background_opacity',
+                type = 'slider',
+                default = 30,
+                custom = {
+                  min = 1,
+                  max = 100,
+                  inc = 5,
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0312>Unit Tooltip Renders Stats With Font Size",
+                tip =   "<LOC OPTIONS_0313>TODO",
+                key = 'uvd_font_size',
+                type = 'slider',
+                default = 12,
+                custom = {
+                    min = 10,
+                    max = 20,
+                    inc = 1,
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0314>Unit Tooltip Renders Stats With Font Bold",
+                tip =   "<LOC OPTIONS_0315>TODO",
+                key = 'uvd_font_bold',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            }, 
+            {
+                title = "<LOC OPTIONS_0320>Unit Tooltip Shows Intel Stats",
+                tip =   "<LOC OPTIONS_0321>TODO",
+                key = 'uvd_show_intel_stats',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_022>Unit Tooltip Shows Movement Stats",
+                tip =   "<LOC OPTIONS_023>TODO",
+                key = 'uvd_show_movement_stats',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0324>Unit Tooltip Shows Upgrade Stats",
+                tip =   "<LOC OPTIONS_0325>TODO",
+                key = 'uvd_show_upgrade_stats',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0326>Unit Tooltip Shows Weapon Stats Combined",
+                tip =   "<LOC OPTIONS_0327>TODO",
+                key = 'uvd_show_weapon_stats',
+                type = 'toggle',
+                default = true,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0332>Unit Tooltip Shows Weapon Stats with AOE",
+                tip =   "<LOC OPTIONS_0333>TODO",
+                key = 'uvd_show_weapon_aoe',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0330>Unit Tooltip Shows Weapon Stats with DPM",
+                tip =   "<LOC OPTIONS_0331>TODO",
+                key = 'uvd_show_weapon_dpm',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0328>Unit Tooltip Shows Weapon Cost",
+                tip =   "<LOC OPTIONS_0328>TODO",
+                key = 'uvd_show_weapon_cost',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0334>Unit Tooltip Shows Hitpoints Per Mass",
+                tip =   "<LOC OPTIONS_0335>TODO",
+                key = 'uvd_show_hitpoints_per_mass',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
+                title = "<LOC OPTIONS_0336>Unit Tooltip Shows Build Rate Per Mass",
+                tip =   "<LOC OPTIONS_0337>TODO",
+                key = 'uvd_show_buildrate_per_mass',
+                type = 'toggle',
+                default = false,
+                custom = {
+                    states = {
+                        { key = true,  text = "<LOC _On>" },
+                        { key = false, text = "<LOC _Off>" },
+                    },
+                },
+            },
+            {
                 title = "<LOC OPTIONS_0001>Zoom Wheel Sensitivity",
                 key = 'wheel_sensitivity',
                 type = 'slider',
@@ -111,6 +291,7 @@ options = {
                     },
                 },
             },
+            -- TODO remove obsolete option
             {
                 title = "<LOC OPTIONS_0107>Construction Tooltip Information",
                 tip = "<LOC OPTIONS_0108>Change the layout that information is displayed in the rollover window for units in the construction manager.",
@@ -127,7 +308,7 @@ options = {
                         {text = "<LOC _Off>", key = 'off'},
                     },
                 },
-            },
+            }, 
             {
                 title = "<LOC OPTIONS_0215>Show Waypoint ETAs",
                 key = 'display_eta',
@@ -668,7 +849,7 @@ options = {
                     },
                 },
             },
-
+            -- TODO remove obsolete option
             {
                 title = "<LOC OPTIONS_0244>Show Armament Build in Factory Menu",
                 key = 'gui_render_armament_detail',

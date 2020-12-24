@@ -16,6 +16,7 @@ local StatusBar = import('/lua/maui/statusbar.lua').StatusBar
 local LayoutHelpers = import('/lua/maui/layouthelpers.lua')
 local UnitsAnalyzer   = import('/lua/ui/lobby/UnitsAnalyzer.lua')
 local UnitsRestrictions = import('/lua/ui/lobby/UnitsRestrictions.lua')
+local BpAnalyzer = import('/lua/system/BlueprintsAnalyzer.lua')
 
 -- Stores unit blueprints for all factions
 local blueprints = { All = {}, Original = {}, Modified = {}, Skipped = {} }
@@ -287,8 +288,7 @@ function OnBlueprintsProgress(task)
      if GUI.progressTxt and task and task.name then
         GUI.progressTxt:SetText(task.name .. ' ...')
      end
-end
-
+end 
 function OnBlueprintsLoaded()
 
     GUI.progressBar:Hide()
@@ -318,7 +318,7 @@ function OnBlueprintsLoaded()
         -- group units based on type and calculate number of grid columns
         cellMax = 0
         for name, faction in factions do
-            UnitsAnalyzer.GetUnitsGroups(faction.Blueprints, faction)
+            BpAnalyzer.GetUnitsGroups(faction.Blueprints, faction)
             for group, units in faction.Units do
                 if table.getsize(units) > 0 then
                     cellMax = cellMax + 1
@@ -593,7 +593,7 @@ function CreateUnitIcon(parent, bp, faction)
     control.Width:Set(cellSize)
     control:SetSolidColor('FF000000')
 
-    local imagePath = UnitsAnalyzer.GetImagePath(bp, faction)
+    local imagePath = BpAnalyzer.GetImagePath(bp, faction)
     bp.ImagePath = imagePath
 
     local fill = Bitmap(control)
@@ -789,7 +789,7 @@ function CreatePresetIcon(parent, presetName)
     control.Width:Set(cellSize)
     control:SetSolidColor(colors.FillUncheck)
 
-    local imagePath = UnitsAnalyzer.GetImagePath(preset, '')
+    local imagePath = BpAnalyzer.GetImagePath(preset, '')
 
     local fill = Bitmap(control)
     fill.Height:Set(cellSize-1)
@@ -925,7 +925,7 @@ function ProcessRestrictions()
         local unit = blueprints.All[bpID]
         local isRestricted = false
 
-        if UnitsAnalyzer.Contains(unit, expressions) then
+        if BpAnalyzer.Contains(unit, expressions) then
             isRestricted = true
         elseif enhancements[bpID] then
             isRestricted = true

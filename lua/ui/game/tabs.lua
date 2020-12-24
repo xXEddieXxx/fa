@@ -475,6 +475,18 @@ function Create(parent)
 
     SetLayout()
     CommonLogic()
+
+    local GUI = GetFrame(0)
+    GUI.Tester = UIUtil.CreateButtonWithDropshadow(GUI, '/BUTTON/medium/', "TESTER")
+    GUI.Tester.Width:Set(90)
+    GUI.Tester.Depth:Set(1000)
+    GUI.Tester.OnClick = function()
+        WARN('Tester.OnClick') 
+        --import('/lua/ui/lobby/UnitsAnalyzer.lua').TestUI() 
+        import('/lua/ui/lobby/UnitTester.lua').CreateUI() 
+    end
+    LayoutHelpers.LeftOf(GUI.Tester, controls.parent) 
+    LayoutHelpers.AtTopIn(GUI.Tester, GUI, 5)
 end
 
 function SetLayout()

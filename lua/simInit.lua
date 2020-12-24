@@ -16,6 +16,7 @@
 --     3b. The saved lua state is deserialized
 -- ==========================================================================================
 
+    WARN('simInit.lua...') 
 -- Do global initialization and set up common global functions
 doscript '/lua/globalInit.lua'
 
@@ -222,8 +223,10 @@ end
 -- any units yet) and we're ready to start the game. It's responsible for setting up
 -- the initial units and any other gameplay state we need.
 function BeginSession()
-    LOG('BeginSession...')
-    SPEW('Active mods in sim: ', repr(__active_mods))
+    -- LOG('Active mods in SIM session: ',repr(__active_mods))
+    LOG('Active mods in SIM session: ')
+    import('/lua/mods.lua').Print(__active_mods)
+
     ForkThread(GameTimeLogger)
     local focusarmy = GetFocusArmy()
     if focusarmy>=0 and ArmyBrains[focusarmy] then

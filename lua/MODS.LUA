@@ -16,7 +16,7 @@ mod_info.lua file which contains various bits of info:
         not a very safe way to keep mods differentiated. I'd recommend using a GUID
         or Guaranteed Unique ID. Also, every new version of a mod should get a new
         GUID so that mods which rely on the old version can select it appropriately.
-        This following webpages allow you to generate a guaranteed unique ID on line (as of 4/6/07)
+        This following web pages allow you to generate a guaranteed unique ID on line (as of 4/6/07)
         http://www.somacon.com/p113.php
         http://www.famkruithof.net/uuid/uuidgen
 
@@ -113,7 +113,7 @@ Adding extra maps
 
    If a mod contains a blueprint matching the ID of an existing unit (e.g. uel0001)
    then the mod's blueprint will replace the original. If the "Merge=true" flag is
-   set in the mod blueprint, it will be merged with the original can can override
+   set in the mod blueprint, it will be merged with the original can override
    some fields while leaving others intact.
 
 
@@ -187,19 +187,19 @@ Mod initialization issues
         Game mods         [all others]
 
     The mod manager (whether run from the front end or from the lobby) loads this module
-    to get a list of all mods in the system, so the user can select and deselect mods.
+    to get a list of all mods in the system, so the user can select and unselect mods.
     Those changes are stored in the player's preferences.
 
     When launching a game, the lobby scripts call this module to get the list of active
     Game mods to pass into the simulation (in gameinfo.Options.Mods). The simulation just
     uses whatever list it was given.
 
-    The ingame UI calls this module to get a list of ingame UI mods to apply directly from
+    The in-game UI calls this module to get a list of in-game UI mods to apply directly from
     preferences.
 '
 -------------------------------------------------------------------------------------------------------------------- ]]
 
-local SetUtils = import('/lua/system/setutils.lua')
+--local SetUtils = import('/lua/system/setutils.lua')
 
 -- Table of all mods found on disk, indexed by id
 local _mod_cache = nil
@@ -247,23 +247,31 @@ function GetSelectedMods()
 end
 
 function GetSelectedSimMods()
-    return SetUtils.PredicateFilter(GetSelectedMods(),
-        function(uid)
-            return not AllMods()[uid].ui_only
-        end
-)
+--    return SetUtils.PredicateFilter(GetSelectedMods(),
+--        function(uid)
+--            return not AllMods()[uid].ui_only
+--        end
+--)
+    local all = AllMods() 
+    return table.filter(GetSelectedMods(), 
+        function(status, uid) return all[uid] and not all[uid].ui_only end)
 end
 
 function GetSelectedUIMods()
-    return SetUtils.PredicateFilter(GetSelectedMods(),
-        function(uid)
-            return AllMods()[uid].ui_only
-        end
-)
+--    return SetUtils.PredicateFilter(GetSelectedMods(),
+--        function(uid)
+--            return AllMods()[uid].ui_only
+--        end
+--)
+    local all = AllMods() 
+    return table.filter(GetSelectedMods(), 
+        function(status, uid) return all[uid] and all[uid].ui_only end)
+
 end
 
 local function LoadModInfo(filename)
     -- Fill in some defaults to start with...
+    LOG('LoadModInfo ' .. filename)
     local env = {
         location = Dirname(filename),
         name = filename,
@@ -300,7 +308,7 @@ function AllMods()
         local r = {}
         for i,file in DiskFindFiles('/mods', '*mod_info.lua') do
             local mod = LoadModInfo(file)
-            if mod and (mod.enabled != false) and (mod.name != "Hotstats") then
+            if mod and (mod.enabled ~= false) and (mod.name ~= "Hotstats") then
                 r[mod.uid] = mod
             end
         end
@@ -344,9 +352,9 @@ local function ModComp(first, second)
     return first < second
 end
 
--- Get a list of ingame UI mods that should be active, based on preferences.
+-- Get a list of in-game UI mods that should be active, based on preferences.
 -- Only "ui_only" mods are included in the list; mods that affect the sim
--- from from GetActiveGameMods().
+-- from GetActiveGameMods().
 local function GetActiveModsFiltered(filter, selected)
     if not selected then
         selected = GetSelectedMods()
@@ -380,7 +388,7 @@ function GetCampaignMods(scenario)
     return r
 end
 
--- given a uid of a mod, returns a tabe containing:
+-- given a uid of a mod, returns a table containing:
 --  requires: list of installed uids that this mod requires
 --  missing: list of uids that this mod requires but aren't installed
 --  conflicts: list of installed uids that this mod conflicts with (or conflict with this mod)
@@ -405,7 +413,7 @@ function GetDependencies(uid)
 
         -- check if any other mods list this mod as a conflict
         for id, info in allMods do
-            if id != uid then
+            if id ~= uid then
                 if allMods[id].conflicts then
                     for i, conflict in allMods[id].conflicts do
                         if uid == conflict then
@@ -450,4 +458,29 @@ function UpdateUIMods()
     for i,m in ipairs(GetUiMods()) do
         table.insert(__active_mods, m)
     end
+end
+
+-- safely print basic info about mods
+function Print(mods)
+    for id, mod in mods or {} do
+        local info = mod.ui_only and 'UI mod' or 'GAME mod'
+        info = info .. ' ' .. StringQuote(mod.uid) 
+        local ver = string.format("v%.1f", (mod.version or '1.0'))
+        local author = StringQuote(mod.author or 'UNKNOWN')
+        local name = mod.name or 'NONAME'
+        if string.find(name, ' v') then 
+            info = info .. ' - '.. StringQuote(name)
+        else
+            info = info .. ' - '.. StringQuote(name .. ' '.. ver)
+        end
+        info = info .. ' created by ' .. StringQuote(mod.author or 'UNKNOWN')
+        LOG('- ' .. info)
+    end
+end
+
+function PrintUiMods()
+    Print(GetUiMods())
+end
+function PrintGameMods()
+    Print(GetGameMods())
 end

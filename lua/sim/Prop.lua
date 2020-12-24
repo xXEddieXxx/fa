@@ -149,7 +149,11 @@ Prop = Class(moho.prop_methods, Entity) {
             self.hasLabel = false
         end
 
-        Sync.Reclaim[self:GetEntityId()] = data
+        -- HUSSAR added fix for nil reference exception
+        local eid = self:GetEntityId()
+        if eid and Sync.Reclaim then
+            Sync.Reclaim[eid] = data
+        end
     end,
 
     OnDestroy = function(self)

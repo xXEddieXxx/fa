@@ -25,7 +25,7 @@ local Prefs = import('/lua/user/prefs.lua')
 local EnhanceCommon = import('/lua/enhancementcommon.lua')
 local Templates = import('/lua/ui/game/build_templates.lua')
 local BuildMode = import('/lua/ui/game/buildmode.lua')
-local UnitViewDetail = import('/lua/ui/game/unitviewDetail.lua')
+--local UnitViewDetail = import('/lua/ui/game/unitviewDetail.lua')
 local options = Prefs.GetFromCurrentProfile('options')
 local Effect = import('/lua/maui/effecthelpers.lua')
 local TemplatesFactory = import('/lua/ui/templates_factory.lua')
@@ -188,7 +188,8 @@ function IssueUpgradeOrders(units, bpid)
     if not upgrades[unitid] then
         return
     end
-
+    
+    WARN("UNITCOMMAND_Upgrade IssueUpgradeOrders upgrades=" .. table.getsize(upgrades))
     for _, o in upgrades[unitid] do
         IssueBlueprintCommand("UNITCOMMAND_Upgrade", o, 1, false)
     end
@@ -449,11 +450,11 @@ function CreateTabs(type)
                             local bpID = selection[1]:GetBlueprint().BlueprintId
                             local enhName = existing[slotName]
                             local texture = "/textures/ui/common" .. GetEnhancementPrefix(bpID, enhancementPrefixes[slotName] .. icon)
-                            UnitViewDetail.ShowEnhancement(enhancement, bpID, icon, texture, sortedOptions.selection[1])
+                            import('/lua/ui/game/unitviewDetail.lua').ShowEnhancement(enhancement, bpID, icon, texture, sortedOptions.selection[1])
                         end
                     elseif event == 'exit' then
                         if existing[slotName] then
-                            UnitViewDetail.Hide()
+                            import('/lua/ui/game/unitviewDetail.lua').Hide()
                         end
                     end
                 end
@@ -1131,16 +1132,16 @@ function OnRolloverHandler(button, state)
 
     if state == 'enter' then
         if item.type == 'item' then
-            UnitViewDetail.Show(__blueprints[item.id], sortedOptions.selection[1], item.id)
+            import('/lua/ui/game/unitviewDetail.lua').Show(__blueprints[item.id], sortedOptions.selection[1], item.id)
         elseif item.type == 'queuestack' or item.type == 'unitstack' or item.type == 'attachedunit' then
-            UnitViewDetail.Show(__blueprints[item.id], nil, item.id)
+            import('/lua/ui/game/unitviewDetail.lua').Show(__blueprints[item.id], nil, item.id)
         elseif item.type == 'enhancement' then
-            UnitViewDetail.ShowEnhancement(item.enhTable, item.unitID, item.icon, GetEnhancementPrefix(item.unitID, item.icon), sortedOptions.selection[1])
+            import('/lua/ui/game/unitviewDetail.lua').ShowEnhancement(item.enhTable, item.unitID, item.icon, GetEnhancementPrefix(item.unitID, item.icon), sortedOptions.selection[1])
         elseif item.type == 'enhancementqueue' then
-            UnitViewDetail.ShowEnhancement(item.enhancement, item.unitID, item.icon, GetEnhancementPrefix(item.unitID, item.icon), sortedOptions.selection[1])
+            import('/lua/ui/game/unitviewDetail.lua').ShowEnhancement(item.enhancement, item.unitID, item.icon, GetEnhancementPrefix(item.unitID, item.icon), sortedOptions.selection[1])
         end
     else
-        UnitViewDetail.Hide()
+        import('/lua/ui/game/unitviewDetail.lua').Hide()
     end
 end
 
@@ -2469,7 +2470,7 @@ function OnSelection(buildableCategories, selection, isOldSelection)
             ClearSessionExtraSelectList()
         end
         sortedOptions = {}
-        UnitViewDetail.Hide()
+        import('/lua/ui/game/unitviewDetail.lua').Hide()
 
         if not selection[1]:IsInCategory('FACTORY') then
             local inQueue = {}

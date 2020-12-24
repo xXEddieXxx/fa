@@ -130,6 +130,7 @@ local controlTypeCreate = {
         sliderGroup.Width:Set(parent.Width)
         sliderGroup.Height:Set(parent.Height)
 
+--        table.print(optionItemData, 'optionItemData')
         sliderGroup._slider = false
         if optionItemData.custom.inc == 0 then
             sliderGroup._slider = Slider(sliderGroup, false, optionItemData.custom.min, optionItemData.custom.max, UIUtil.SkinnableFile('/slider02/slider_btn_up.dds'), UIUtil.SkinnableFile('/slider02/slider_btn_over.dds'), UIUtil.SkinnableFile('/slider02/slider_btn_down.dds'), UIUtil.SkinnableFile('/slider02/slider-back_bmp.dds'))
@@ -183,8 +184,13 @@ local controlTypeCreate = {
             optionItemData.change = nil
         end
 
-        -- set initial value
-        sliderGroup._slider:SetValue(currentOptionsSet[optionItemData.key])
+        -- set initial value or use default value if option key is not found
+--        LOG('slider value ' .. tostring(currentOptionsSet[optionItemData.key]) )
+        local value = currentOptionsSet[optionItemData.key]
+        if value == nil then
+           value = optionItemData.default
+        end
+        sliderGroup._slider:SetValue(value)
 
         sliderGroup.SetCustomData = function(newCustomData, newDefault)
             -- this isn't really correct as it should check the indent, and recreate the control if needed
@@ -202,9 +208,11 @@ local controlTypeCreate = {
 local function CreateOption(parent, optionItemData)
     local bg = Bitmap(parent, UIUtil.SkinnableFile('/dialogs/options-02/content-box_bmp.dds'))
 
+--    local text = optionItemData.title
     bg._label = UIUtil.CreateText(bg, optionItemData.title, 16, UIUtil.bodyFont)
     LayoutHelpers.AtLeftTopIn(bg._label, bg, 9, 6)
     bg._label._tipText = optionItemData.key
+--    bg._label._tipText = optionItemData.tip or "options_" .. optionItemData.key
 
     bg._label.HandleEvent = function(self, event)
         if event.Type == 'MouseEnter' then

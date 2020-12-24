@@ -7,52 +7,7 @@ local GameCommon = import('/lua/ui/game/gamecommon.lua')
 local ItemList = import('/lua/maui/itemlist.lua').ItemList
 local Prefs = import('/lua/user/prefs.lua')
 
-
-function CreateResourceGroup(parent, groupLabel)
-    local group = Group(parent)
-    
-    -- Group label
-    group.Label = UIUtil.CreateText( group, groupLabel, 12, "Arial Bold" )
-    group.Label:SetColor("FFBEBEBE")
-    group.Label:SetDropShadow(true)
-
-    -- Energy Icon
-    group.EnergyIcon = Bitmap(group)
-    group.EnergyIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-energy_bmp.dds'))
-
-    -- Energy Value
-    group.EnergyValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
-    group.EnergyValue:SetColor("FF00F000")
-    group.EnergyValue:SetDropShadow(true)
-
-    -- Mass Icon
-    group.MassIcon = Bitmap(group)
-    group.MassIcon:SetTexture(UIUtil.UIFile('/game/unit-over/icon-mass_bmp.dds'))
-
-    -- Mass Value
-    group.MassValue = UIUtil.CreateText( group, "0", 12, UIUtil.bodyFont )
-    group.MassValue:SetColor("FF00F000")
-    group.MassValue:SetDropShadow(true)
-
-    return group
-end
-
--- A 'Stat Group' is an icon or text label with a value on the right
--- e.g.  Health 3000
---       Shield 6000
---       <icon> 24
-function CreateStatGroup(parent, labelIcon)
-    local group = Group(parent)
-    
-    group.Label = Bitmap(group)
-    group.Label:SetTexture(labelIcon)
-
-    group.Value = UIUtil.CreateText( group, "", 14, UIUtil.bodyFont )
-    group.Value:SetColor("FF00F000")
-    group.Value:SetDropShadow(true)
-
-    return group
-end
+LOG('unitviewDetail_mini.lua loaded')
 
 function CreateTextbox(parent, label, bigBG)
     local group = Group(parent)
@@ -93,87 +48,107 @@ function CreateTextbox(parent, label, bigBG)
     return group
 end
 
+--local UVD = import('/lua/ui/game/unitviewDetail.lua')
+local UVD = '/lua/ui/game/unitviewDetail.lua'
+
 function Create(parent)
-    if not import('/lua/ui/game/unitviewDetail.lua').View then
-        import('/lua/ui/game/unitviewDetail.lua').View = Group(parent)
+    LOG('unitviewDetail_mini.lua - Create')
+    
+    local View = import(UVD).View
+    if not View then -- import(UVD).View then
+--        import(UVD).View = Group(parent)
+--        import(UVD).View = import('/lua/ui/controls/flexbox.lua').FlexBox(parent)
+--        import(UVD).View = import(UVD).CreateView(parent)
+   
+        LOG('unitviewDetail_mini.lua - CreateView')
+        View = import(UVD).CreateView(parent)
     end
     
-    local View = import('/lua/ui/game/unitviewDetail.lua').View
-    
-    if not View.BG then
-        View.BG = Bitmap(View)
-    end
-    View.BG:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/unit-over-back_bmp.dds'))
-    View.BG.Depth:Set(200)
-    
-    if not View.Bracket then
-        View.Bracket = Bitmap(View)
-    end
-    View.Bracket:DisableHitTest()
-    View.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
-    
-    -- Unit icon
-    if false then
-        View.UnitIcon = Bitmap(View)
-    end
-    
-    if not View.UnitImg then
-        View.UnitImg = Bitmap( View.BG )
-    end
-    
-    -- Unit Description
-    if not View.UnitShortDesc then
-        View.UnitShortDesc = UIUtil.CreateText( View.BG, "", 10, UIUtil.bodyFont )
-    end
-    View.UnitShortDesc:SetColor("FFFF9E06")
+--    local View = import(UVD).View
+    View.Depth:Set(200) 
+    View.Height:Set(130)
+    View.Width:Set(445)
+    View:SetOrientation('left')
 
-    -- Cost
-    if not View.BuildCostGroup then
-        View.BuildCostGroup = CreateResourceGroup(View.BG, "<LOC uvd_0000>Build Cost (Rate)")
+--    if not View.BG then
+--        View.BG = Bitmap(View)
+--    end
+--    View.BG:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/unit-over-back_bmp.dds'))
+--    View.BG.Depth:Set(200)
+
+    if View.BG == nil then
+--       View.BG = View.Content
+--        View.BG = import('/lua/ui/controls/flexbox.lua').FlexBox(View)
+--        View.BG = View.SupremeBox.BG
+    end
+--    View.BG.Depth:Set(200) 
+--    View.BG.Height:Set(130)
+--    View.BG.Width:Set(430)
+--    View.BG:SetOrientation('left')
+    
+--    if not View.Bracket then
+--        View.Bracket = Bitmap(View)
+--    end
+--    View.Bracket:DisableHitTest()
+--    View.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
+
+    -- Avatar with unit icon, background and strategic icon
+    if View.UnitAvatar == nil then
+--       View.UnitAvatar = import(UVD).CreateUnitAvatar(View.BG)
     end
 
-    -- Upkeep
-    if not View.UpkeepGroup then
-        View.UpkeepGroup = CreateResourceGroup(View.BG, "<LOC uvd_0002>Yield")
+    -- Unit Name
+--    if not View.UnitName then
+--        View.UnitName = UIUtil.CreateText(View.BG, "", 10, UIUtil.bodyFont)
+--    end
+--    View.UnitName:SetColor("FFFF9E06") -- #FFFF9E06
+
+    if View.UnitName == nil then
+--       View.UnitName = import(UVD).CreateUnitName(View.BG)
     end
+    if View.FactionIcon == nil then
+--       View.FactionIcon = import(UVD).CreateUnitFaction(View.BG)
+    end
+
+    -- Unit Cost
+    if View.EconomyColumn == nil then
+--       View.EconomyColumn = import(UVD).CreateColumnCost(View.BG)
+    end
+
+    -- Unit Upkeep
+    if View.UpkeepColumn == nil then
+--       View.UpkeepColumn = import(UVD).CreateColumnUpkeep(View.BG)
+    end
+
+    -- Unit Defense
+    if View.DefenseColumn == nil then
+--       View.DefenseColumn = import(UVD).CreateColumnDefense(View.BG)
+    end
+
+--    if Prefs.GetOption('uvd_format') == 'full' then
+--        -- Description  "<LOC uvd_0003>Description"
+--        if not View.Description then
+--            View.Description = CreateTextbox(View.BG, nil, true)
+--        end
+--    else
+--        if View.Description then 
+--           View.Description:Destroy() 
+--           View.Description = false 
+--        end
+--    end
     
-    -- Health stat
-    if not View.HealthStat then
-        View.HealthStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/redcross.dds') )
-    end
-    
-    if not View.ShieldStat then
-        View.ShieldStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit_view_icons/shield.dds') )
-    end
-    -- Tme stat
-    if not View.TimeStat then
-        View.TimeStat = CreateStatGroup( View.BG, UIUtil.UIFile('/game/unit-over/icon-clock_bmp.dds') )
-    end
-    
-    if not View.TechLevel then
-        View.TechLevel = UIUtil.CreateText(View.BG, '', 10, UIUtil.bodyFont)
-    end
-    View.TechLevel:SetColor("FFFF9E06")
-    
-    if Prefs.GetOption('uvd_format') == 'full' then
-        -- Description  "<LOC uvd_0003>Description"
-        if not View.Description then
-            View.Description = CreateTextbox(View.BG, nil, true)
-        end
-    else
-        if View.Description then View.Description:Destroy() View.Description = false end
-    end
-    
-    View.BG:DisableHitTest(true)
+--    View.BG:DisableHitTest(true)
+    return View
 end
 
 function SetLayout()
-    local mapGroup = import('/lua/ui/game/unitviewDetail.lua').MapView
-    import('/lua/ui/game/unitviewDetail.lua').ViewState = Prefs.GetOption('uvd_format')
+    LOG('unitviewDetail_mini.lua - SetLayout')
+    local mapGroup = import(UVD).MapView
+    import(UVD).ViewState = Prefs.GetOption('uvd_format')
     
-    Create(mapGroup)
+    local control = Create(mapGroup)
     
-    local control = import('/lua/ui/game/unitviewDetail.lua').View
+--    local control = import(UVD).View
 
     local OrderGroup = false
     if not SessionIsReplay() then
@@ -181,83 +156,80 @@ function SetLayout()
     end
 
     if OrderGroup then
-        LayoutHelpers.Above(control, OrderGroup, 2)
+        LayoutHelpers.Above(control, OrderGroup, 7)
         LayoutHelpers.AtLeftIn(control, OrderGroup)
     else
-        LayoutHelpers.AtBottomIn(control, control:GetParent(), 140)
+        LayoutHelpers.AtBottomIn(control, control:GetParent(), 145)
         LayoutHelpers.AtLeftIn(control, control:GetParent(), 0)
     end
-    control.Width:Set( control.BG.Width )
-    control.Height:Set( control.BG.Height )
+--    control.Width:Set( control.BG.Width )
+--    control.Height:Set( control.BG.Height )
     
     -- Main window background
-    LayoutHelpers.AtLeftTopIn( control.BG, control )
+--    LayoutHelpers.AtLeftTopIn( control.BG, control )
     
-    LayoutHelpers.AtLeftTopIn(control.Bracket, control.BG, -18, -2)
-    control.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
+--    LayoutHelpers.AtLeftTopIn(control.Bracket, control.BG, -18, 0)
+--    control.Bracket:SetTexture(UIUtil.UIFile('/game/unit-build-over-panel/bracket-unit_bmp.dds'))
     
-    if control.bracketMid then
-        control.bracketMid:Destroy()
-        control.bracketMid = false
-    end
-    if control.bracketMax then
-        control.bracketMax:Destroy()
-        control.bracketMax = false
-    end
+--    if control.bracketMid then
+--       control.bracketMid:Destroy()
+--       control.bracketMid = false
+--    end
+--    if control.bracketMax then
+--       control.bracketMax:Destroy()
+--       control.bracketMax = false
+--    end
     
-    -- Unit Image
-    LayoutHelpers.AtLeftTopIn( control.UnitImg, control.BG, 12, 36 )
-    control.UnitImg.Height:Set(46)
-    control.UnitImg.Width:Set(48)
-    
-    -- Tech Level Text
-    LayoutHelpers.CenteredBelow(control.TechLevel, control.UnitImg)
-    
-    -- Unit Description
-    LayoutHelpers.AtLeftTopIn( control.UnitShortDesc, control.BG, 20, 13 )
-    control.UnitShortDesc:SetClipToWidth(true)
-    control.UnitShortDesc.Right:Set(function() return control.BG.Right() - 15 end)
-
-    -- Time stat
-    LayoutHelpers.Below( control.TimeStat, control.UnitImg, 4 )
-    LayoutHelpers.AtLeftIn(control.TimeStat, control.UnitImg, -2)
-    control.TimeStat.Height:Set(control.TimeStat.Label.Height)
-    LayoutStatGroup( control.TimeStat )
+    -- Unit Name with tech level
+--    LayoutHelpers.AtLeftTopIn( control.UnitName, control.BG, 15, 13 )
+--    control.UnitName:SetClipToWidth(true)
+--    control.UnitName.Right:Set(function() return control.BG.Right() - 15 end)
+--    import(UVD).LayoutUnitName()
+   
+    -- Unit Icon, movement background, and strategic icon
+--    import(UVD).LayoutUnitAvatar()
     
     -- Build Resource Group
-    LayoutHelpers.AtLeftTopIn( control.BuildCostGroup, control.BG, 70, 34 )
-    control.BuildCostGroup.Width:Set( 115 )
-    LayoutResourceGroup( control.BuildCostGroup )
-    control.BuildCostGroup.Bottom:Set( function() return control.BuildCostGroup.MassValue.Bottom() + 1 end )
+    import(UVD).LayoutEconomyColumn()
 
     -- Upkeep Resource Group
-    LayoutHelpers.RightOf( control.UpkeepGroup, control.BuildCostGroup )
-    control.UpkeepGroup.Width:Set( 55 )
-    control.UpkeepGroup.Bottom:Set( control.BuildCostGroup.Bottom )
-    LayoutResourceGroup( control.UpkeepGroup )
+    import(UVD).LayoutUpkeepColumn() 
+
+    -- health/shield stat 
+    import(UVD).LayoutDefenseColumn()
     
-    -- health stat
-    LayoutHelpers.RightOf( control.HealthStat, control.UpkeepGroup )
-    LayoutHelpers.AtTopIn( control.HealthStat, control.UpkeepGroup, 22 )
-    control.HealthStat.Height:Set(control.HealthStat.Label.Height)
-    LayoutStatGroup( control.HealthStat )
-    
-    -- shield stat
-    LayoutHelpers.RightOf( control.ShieldStat, control.UpkeepGroup, -2 )
-    LayoutHelpers.AtTopIn( control.ShieldStat, control.UpkeepGroup, 42 )
-    control.ShieldStat.Height:Set(control.ShieldStat.Label.Height)
-    LayoutStatGroup( control.ShieldStat )
-    
-    if control.Description then
-        -- Description
-        control.Description.Left:Set(function() return control.BG.Right() - 3 end)
-        control.Description.Bottom:Set(function() return control.BG.Bottom() - 20 end)
-        control.Description.Width:Set(400)
-        control.Description.Height:Set(20)
-        LayoutTextbox(control.Description)
-    end
+    import(UVD).LayoutDescription()
+
+--    if control.Description then
+----       control.Description.Left:Set(function() return control.BG.Right() - 3 end)
+--       control.Description.Left:Set(function() return control.BG.Right() + 60 end)
+--       control.Description.Bottom:Set(function() return control.BG.Bottom() - 20 end)
+--       control.Description.Width:Set(import(UVD).GUI.MaxWidth) -- 400
+--       control.Description.Height:Set(20)
+--       LayoutTextbox(control.Description)
+--    end
 end
 
+--TODO-HUSSAR remove 
+--function SetLayoutOn(control)
+--    -- health stat
+--    control.HealthStat.Label:SetTexture('/textures/ui/common/game/unit_view_icons/healthIcon.dds')
+--    LayoutHelpers.RightOf( control.HealthStat, control.UpkeepColumn, 20 )
+--    LayoutHelpers.AtTopIn( control.HealthStat, control.UpkeepColumn, 22 )
+--    control.HealthStat.Height:Set(control.HealthStat.Label.Height)
+--    LayoutStatGroup( control.HealthStat )
+
+--    -- shield stat
+--    control.ShieldStat.Label:SetTexture('/textures/ui/common/game/unit_view_icons/shieldIcon.dds')
+--    control.ShieldStat.Label.Width:Set(15)
+--    control.ShieldStat.Label.Height:Set(15)
+--    LayoutHelpers.RightOf( control.ShieldStat, control.UpkeepColumn, 20 )
+--    LayoutHelpers.AtTopIn( control.ShieldStat, control.UpkeepColumn, 42 )
+--    control.ShieldStat.Height:Set(control.ShieldStat.Label.Height)
+--    LayoutStatGroup( control.ShieldStat )
+--end
+
+    --TODO-HUSSAR remove
 function LayoutResourceGroup(group)
     
     LayoutHelpers.AtTopIn( group.Label, group )
@@ -276,6 +248,7 @@ function LayoutResourceGroup(group)
     LayoutHelpers.Below(group.EnergyIcon, group.MassIcon, 5)
 end
 
+    --TODO-HUSSAR remove
 function LayoutStatGroup(group)
     group.Width:Set(function() return group.Label.Width() + group.Value.Width() end)
     group.Label.Left:Set(group.Left)

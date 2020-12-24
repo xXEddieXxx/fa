@@ -86,7 +86,7 @@ skins = {
         highlightColor = "FF7FA8A4", --#FF7FA8A4
         disabledColor = "FF685f16", --#FF685f16
         tooltipBorderColor = "FFeee274", --#FFeee274
-        tooltipTitleColor = "FF725b1a" --#FF725b1a
+        tooltipTitleColor = "FF725b1a", --#FF725b1a
     },
     random = {
         default = "uef",

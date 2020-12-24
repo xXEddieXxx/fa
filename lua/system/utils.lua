@@ -24,7 +24,7 @@ function RandomIter(someSet)
     end
 end
 
---- safecall(msg, fn, ...) calls the given function with the given args, and
+--- Calls the given function with the given args, and
 --- catches any error and logs a warning including the given message.
 --- Returns nil if the function failed, otherwise returns the function's result.
 function safecall(msg, fn, ...)
@@ -37,7 +37,7 @@ function safecall(msg, fn, ...)
     end
 end
 
---- table.copy(t) returns a shallow copy of t.
+--- Returns a shallow copy of t.
 function table.copy(t)
     if not t then return end -- prevents looping over nil table
     local r = {}
@@ -47,7 +47,7 @@ function table.copy(t)
     return r
 end
 
---- table.contains(t,val) returns the key for val if it is in t table.
+--- Returns the key for val if it is in t table.
 --- Otherwise, return nil
 function table.find(t,val)
     if not t then return end -- prevents looping over nil table
@@ -59,7 +59,8 @@ function table.find(t,val)
     -- return nil by falling off the end
 end
 
---- table.subset(t1,t2) returns true iff every key/value pair in t1 is also in t2
+
+--- Returns true iff every key/value pair in t1 is also in t2
 function table.subset(t1,t2)
     if not t1 and not t2 then return true end  -- nothing is in nothing
     if not t1 then return true end  -- nothing is in something
@@ -70,12 +71,19 @@ function table.subset(t1,t2)
     return true
 end
 
---- table.equal(t1,t2) returns true iff t1 and t2 contain the same key/value pairs.
+--- Returns true iff t1 and t2 contain the same key/value pairs.
+--- this function does not performs comparison on values of sub-tables while the table.identical() does
 function table.equal(t1,t2)
     return table.subset(t1,t2) and table.subset(t2,t1)
 end
 
---- table.removeByValue(t,val) remove a field by value instead of by index
+--- Returns true iff t1 and t2 contain the same keys, values, and sub-tables
+--- this function performs comparison on values of sub-tables while the table.equal() does not
+function table.identical(t1,t2)
+    return table.getsize(table.delta(t1,t2)) == 0
+end
+
+--- Removes a field by value instead of by index
 function table.removeByValue(t,val)
     if not t then return end -- prevent looping over nil table
     for k,v in t do
@@ -86,7 +94,7 @@ function table.removeByValue(t,val)
     end
 end
 
---- table.deepcopy(t) returns a copy of t with all sub-tables also copied.
+--- Returns a copy of t with all sub-tables also copied.
 function table.deepcopy(t,backrefs)
     if type(t)=='table' then
         if backrefs==nil then backrefs = {} end
@@ -107,13 +115,13 @@ function table.deepcopy(t,backrefs)
     end
 end
 
---- table.merged(t1,t2) returns a table in which fields from t2 overwrite
+--- Returns a table in which fields from t2 overwrite
 --- fields from t1. Neither t1 nor t2 is modified. The returned table may
 --- share structure with either t1 or t2, so it is not safe to modify.
--- e.g.  t1 = { x=1, y=2, sub1={z=3}, sub2={w=4} }
---       t2 = { y=5, sub1={a=6}, sub2="Fred" }
---       merged(t1,t2) -> { x=1, y=5, sub1={a=6,z=3}, sub2="Fred" }
---       merged(t2,t1) -> { x=1, y=2, sub1={a=6,z=3}, sub2={w=4} }
+--- e.g.  t1 = { x=1, y=2, sub1={z=3}, sub2={w=4} }
+---       t2 = { y=5, sub1={a=6}, sub2="Fred" }
+---       merged(t1,t2) -> { x=1, y=5, sub1={a=6,z=3}, sub2="Fred" }
+---       merged(t2,t1) -> { x=1, y=2, sub1={a=6,z=3}, sub2={w=4} }
 function table.merged(t1, t2)
 
     if t1==t2 then
@@ -139,7 +147,7 @@ function table.merged(t1, t2)
     return t1
 end
 
---- Write all undefined keys from t2 into t1.
+--- Writes all undefined keys from t2 into t1.
 function table.assimilate(t1, t2)
     if not t2 then return t1 end -- prevent looping over nil table
     for k, v in t2 do
@@ -161,7 +169,7 @@ function table.subtract(t1, t2)
     return t1
 end
 
---- table.cat(t1, t2) performs a shallow "merge" of t1 and t2, where t1 and t2
+--- Performs a shallow "merge" of t1 and t2, where t1 and t2
 --- are expected to be numerically keyed (existing keys are discarded).
 --- e.g. table.cat({1, 2, 3}, {'A', 'House', 3.14})  ->  {1, 2, 3, 'A', 'House', 3.14}
 function table.cat(t1, t2)
@@ -180,7 +188,7 @@ function table.cat(t1, t2)
     return r
 end
 
---- Concatenate arbitrarily-many tables (equivalent to table.cat, but varargs.
+--- Concatenate arbitrarily-many tables (equivalent to table.cat, but variable number of arguments
 --- Slightly more overhead, but can constructively concat *all* the things)
 function table.concatenate(...)
     local ret = {}
@@ -205,8 +213,50 @@ function table.destructiveCat(t1, t2)
     end
 end
 
---- table.sorted(t, [comp]) is the same as table.sort(t, comp) except it returns
---- a sorted copy of t, leaving the original unchanged.
+--- Returns a new table with keys equal to values from specified table and values equal to indexes of values
+--- this is useful for sorting table by looking up index of values from sort table
+--- input  = { [1] = 'A', [2] = 'B', [3] = 'C' }
+--- output = { [A] = 1, [B] = 2, [C] = 3 }
+function table.lookup(t)
+    local r = {}
+    for i, v in t or {} do
+        r[v] = i
+    end
+    return r
+end
+
+--- Returns an item of the table at specified key or zero
+--- this is useful for making arithmetic operations on values of tables with some uninitialized values
+function table.item(t, key)
+    if not t then return 0 end
+    if not t[key] then return 0 end
+    return t[key]
+end
+
+--- Returns a new table sorted by values of specified field name using order of values in lookup table
+--- @param uniqueFieldName is a field name with unique value for each item, and used as secondary sorter
+--- @param lookupFieldName is a field name used as primary sorter
+--- @param lookupFieldsOrder is a table with all possible values of the lookupFieldName
+--- e.g. table.sortBy(bp.Weapons, 'Damage', 'WeaponCategory', { 'Defense', 'Artillery', 'Missile' } )
+function table.sortBy(t, uniqueFieldName, lookupFieldName, lookupFieldsOrder)
+    if table.getsize(t) < 1 then return t end
+    local list = table.indexize(t)
+    local lookup = table.lookup(lookupFieldsOrder)
+    local warning = false
+    table.sort(list, function(a,b)
+        -- find order index or default to last index
+        local a_order = lookup[a[lookupFieldName]] or 10000
+        local b_order = lookup[b[lookupFieldName]] or 10000
+        if a_order ~= b_order then 
+            return a_order < b_order
+        else
+            return a[uniqueFieldName] < b[uniqueFieldName]
+        end
+    end)
+    return list
+end
+
+--- Returns a sorted copy of table leaving the original unchanged while table.sort(t, comp) changes the table
 --- [comp] is an optional comparison function, defaulting to less-than.
 function table.sorted(t, comp)
     local r = table.copy(t)
@@ -237,11 +287,11 @@ function sort_down_by(field)
     end
 end
 
---- table.keys(t, [comp]) returns a list of the keys of t, sorted.
+--- Returns a list of the keys of t, sorted.
 --- [comp] is an optional comparison function, defaulting to less-than, e.g.
--- table.keys(t) -- returns keys in increasing order (low performance with large tables)
--- table.keys(t, function(a, b) return a > b end) -- returns keys in decreasing order (low performance with large tables)
--- table.keys(t, false) -- returns keys without comparing/sorting (better performance with large tables)
+--- table.keys(t) -- returns keys in increasing order (low performance with large tables)
+--- table.keys(t, function(a, b) return a > b end) -- returns keys in decreasing order (low performance with large tables)
+--- table.keys(t, false) -- returns keys without comparing/sorting (better performance with large tables)
 function table.keys(t, comp)
     local r = {}
     if not t then return r end -- prevents looping over nil table
@@ -254,7 +304,7 @@ function table.keys(t, comp)
     return r
 end
 
---- table.values(t) Return a list of the values of t, in unspecified order.
+--- Return a list of the values of t, in unspecified order.
 function table.values(t)
     local r = {}
     if not t then return r end -- prevents looping over nil table
@@ -273,10 +323,7 @@ function table.concatkeys(t, sep)
     return table.concat(tt,sep)
 end
 
---- Iterates over a table in key-sorted order:
----   for k,v in sortedpairs(t) do
----       print(k,v)
----   end
+--- Iterates over a table in key-sorted order
 --- @param comp is an optional comparison function, defaulting to less-than.
 function sortedpairs(t, comp)
     local keys = table.keys(t, comp)
@@ -291,7 +338,11 @@ function sortedpairs(t, comp)
 end
 
 --- Returns actual size of a table, including string keys
-function table.getsize(t)
+function table.getsize(t) 
+    return table.size(t) -- calling shorter function for API compatibility 
+end
+--- Returns actual size of a table, including string keys
+function table.size(t)
     -- handling nil table like empty tables so that no need to check
     -- for nil table and then size of table:
     -- if t and table.getsize(t) > 0 then
@@ -333,9 +384,11 @@ function table.reverse(t)
 end
 
 --- Converts hash table to a new table with keys from 1 to size of table and the same values
---- it is useful for preparing hash table before sorting its values
---- table.indexize { [a] = 'one', [b] = 'two', [c] = 'three' } =>
----                { [1] = 'one', [2] = 'two', [3] = 'three' }
+--- this is useful for preparing hash table before sorting its values
+--- t1 = { 1 = '11', 2 = '22', 3 = '33' }
+--- t2 = { A = 'AA', B = 'BB', C = 'CC' }
+--- table.indexize(t1) => { 1 = '11', 2 = '22', 3 = '33' }
+--- table.indexize(t2) => { 1 = 'AA', 2 = 'BB', 3 = 'CC' }
 function table.indexize(t)
     if not t then return {} end -- prevents looping over nil table
     local r = {}
@@ -349,8 +402,10 @@ end
 
 --- Converts a table to a new table with values as keys and values equal to true, duplicated table values are discarded
 --- it is useful for quickly looking up values in tables instead of looping over them
---- table.hash { [1] = 'A',  [2] = 'B',  [3] = 'C',  [4] = 'C' } =>
----            { [A] = true, [B] = true, [C] = true }
+--- t1 = { 1 = '11', 2 = '22', 3 = '33' }
+--- t2 = { A = 'AA', B = 'BB', C = 'CC' }
+--- table.hash(t1) => { 11 = true, 22 = true, 33 = true }
+--- table.hash(t2) => { AA = true, BB = true, CC = true }
 function table.hash(t)
     if not t then return {} end -- prevents looping over nil table
     local r = {}
@@ -366,8 +421,10 @@ end
 
 --- Converts a table to a new table with values as keys only if their values are true
 --- it is reverse logic of table.hash(t)
---- table.unhash { [A] = true, [B] = true, [C] = false }  =>
---               { [1] = 'A',  [2] = 'B', }
+--- t1 = { 1 = true, 2 = true, 3 = false }
+--- t2 = { A = true, B = true, C = false }
+--- table.unhash(t1) => { 1 = 1, 2 = 2 } 
+--- table.unhash(t2) => { 1 = A, 2 = B } 
 function table.unhash(t)
     if not t then return {} end -- prevents looping over nil table
     local r = {}
@@ -382,7 +439,7 @@ function table.unhash(t)
 end
 
 --- Gets keys of hash table if their values equal to specified boolean value, defaults to true
---- it is useful to check which keys are present or not in a hash table
+--- this is useful to check which keys are present or not in a hash table
 --- t = { [A] = true, [B] = true, [C] = false }
 --- table.hashkeys(t, true)  =>  { 'A', 'B' }
 --- table.hashkeys(t, false) =>  { 'C' }
@@ -403,12 +460,12 @@ function table.map(fn, t)
     return r
 end
 
---- table.empty(t) returns true iff t has no keys/values.
+--- Returns true iff the table has no keys/values.
 function table.empty(t)
     return table.getsize(t) == 0
 end
 
---- table.shuffle(t) returns a shuffled table
+--- Returns a shuffled table
 function table.shuffle(t)
     local r = {}
     for key, val in RandomIter(t) do
@@ -421,7 +478,7 @@ function table.shuffle(t)
     return r
 end
 
--- table.binsert(t, value, cmp) binary insert value into table using cmp-func
+--- Binary insert value into table using cmp-func
 function table.binsert(t, value, cmp)
       local cmp = cmp or (function(a,b) return a < b end)
       local start, stop, mid, state = 1, table.getsize(t), 1, 0
@@ -438,8 +495,8 @@ function table.binsert(t, value, cmp)
       return mid + state
    end
 
--- Pretty-print a table. Depressingly large amount of wheel-reinvention were required, thanks to
--- SC's LUA being a bit weird and the existing solutions to this problem being aggressively optimized
+--- Pretty-print a table. Depressingly large amount of wheel-reinvention were required, thanks to
+--- SC's LUA being a bit weird and the existing solutions to this problem being aggressively optimized
 function printField(k, v, tblName, printer)
     if not printer then printer = WARN end
     if not tblName then tblName = "" end
@@ -458,7 +515,7 @@ function printField(k, v, tblName, printer)
     end
 end
 
---- Prints keys and values of a table and sub-tables if present
+--- Prints keys and values of a table and sub-tables if present in alphabetical order of table's keys
 --- @param tbl specifies a table to print
 --- @param tblPrefix specifies optional table prefix/name
 --- @param printer specifies optional message printer: LOG, WARN, error, etc.
@@ -477,29 +534,175 @@ function table.print(tbl, tblPrefix, printer)
         return
     end
     printer(tblPrefix.." {")
-    for k, v in pairs(tbl) do
+    -- sort and print table values in alphabetical order
+    for k, v in sortedpairs(tbl) do
         printField(k, v, tblPrefix .. "    ", printer)
     end
 
     printer(tblPrefix.." }")
 end
 
---- Return filtered table containing every mapping from table for which fn function returns true when passed the value.
+--- Fills out all the values in a given table with specified item value
+function table.fill(t, item)
+    for k, v in t or {} do
+        t[k] = item
+    end
+end
+
+--- Returns the first valid (not false) value or nil in a given table 
+--- t1 = { false, 'v1', 'v2', false }
+--- t2 = { A = false, B = 'v1', C = 'v2', D = false }
+--- table.firstValue(t1) => 'v1'
+--- table.firstValue(t2) => 'v1'
+function table.firstValue(t)
+    for k, v in t or {} do
+        if v then return v end
+    end
+    return nil
+end
+
+--- Returns the first valid (not false) key or nil in a given table
+--- t1 = { 1 = false, 2 = 'v1', 3 = 'v2', 4 = false }
+--- t2 = { A = false, B = 'v1', C = 'v2', D = false }
+--- table.firstKey(t1) => '1'
+--- table.firstKey(t2) => 'A'
+function table.firstKey(t)
+    for k, v in t or {} do
+        if v then return k end
+    end
+    return nil
+end
+
+--- Returns the last valid (not false) value or nil in a given table
+--- t1 = { 1 = false, 2 = 'v1', 3 = 'v2', 4 = false }
+--- t2 = { A = false, B = 'v1', C = 'v2', D = false }
+--- table.lastValue(t1) => 'v2'
+--- table.lastValue(t2) => 'v2'
+function table.lastValue(t)
+    for k, v in table.reverse(t) do
+        if v then return v end 
+    end
+    return nil
+end
+
+--- Returns the last valid (not false) key or nil in a given table
+--- t1 = { 1 = false, 2 = 'v1', 3 = 'v2', 4 = false }
+--- t2 = { A = false, B = 'v1', C = 'v2', D = false }
+--- table.lastKey(t1) => '3'
+--- table.lastKey(t2) => 'C'
+function table.lastKey(t)
+    for k, v in table.reverse(t) do
+        if v then return k end
+    end
+    return nil
+end
+
+--- Pops the last valid value from by removing it from a given table and returns its value
+--- t1 = { 1 = false, 2 = 'v1', 3 = 'v2', 4 = false }
+--- t2 = { A = false, B = 'v1', C = 'v2', D = false }
+--- table.pop(t1) => 'v2' and t1 = { 1 = false, 2 = 'v1', 3 = nil, 4 = false }
+--- table.pop(t2) => 'v2' and t2 = { A = false, B = 'v1', C = nil, D = false }
+function table.pop(t)
+    if not t then return nil end
+    local k = table.lastKey(t)
+    if not k then return nil end
+    local v = t[k]
+    t[k] = nil
+    return v
+end
+
+--- pushes a new item to the table only if this item is not already present
+--- t1 = { 1 = 'v1', 2 = 'v2', 3 = 'v3'  }
+--- t2 = { 1 = 'v1', 2 = 'v2' }
+--- table.push(t1, 'v3') => t1 = { 1 = 'v1', 2 = 'v2', 3 = 'v3' }
+--- table.push(t2, 'v3') => t2 = { 1 = 'v1', 2 = 'v2', 3 = 'v3' }
+function table.push(t, item)
+    if not t then return nil end
+
+    local found = table.find(t, item)
+    if found then return nil end
+
+    table.insert(t, item)
+end
+
+--- Returns a new table with values and keys between indexes of a given table
+--- t1 = { 1 = 'v1', 2 = 'v2', 3 = false }
+--- t2 = { A = 'v1', B = 'v2', C = false }
+--- table.slice(t1, 2, 3) => { 2 = 'v2', 3 = false }
+--- table.slice(t2, 2, 3) => { B = 'v2', C = false }
+function table.slice(t, fromIndex, toIndex)
+    if not t then return {} end
+    local size = table.getsize(t)
+    -- check for valid range of indexes otherwise default to min/max index
+    if size == 0 then return {} end
+    if size < fromIndex then fromIndex = 1 end
+    if size < toIndex then toIndex = size end
+    if fromIndex == toIndex then return {} end
+
+    local keys = table.keys(t) -- get original keys of the table
+    local array = table.indexize(t) -- in case t is hash table
+
+    local ret = {}
+    for i = fromIndex, toIndex, 1 do
+        local k = keys[i]
+        local v = array[i]
+        ret[k] = v
+    end
+    return ret
+end
+
+--- Initializes a table with arbitrarily-many keys by setting these keys to zero
+--- as long as these keys do not have a value already in this table
+--- this is useful to initialize tables in unit blueprints
+--- t1 = { 1 = 'v1', 2 = 'v2' }
+--- t2 = { A = 'v1', B = 'v2' }
+--- table.init(t1, '2', '3', '4' ) => { 1 = 'v1', 2 = 'v2', 3 = 0, 4 = 0 }
+--- table.init(t2, 'B', 'C', 'D' ) => { A = 'v1', B = 'v2', C = 0, D = 0 }
+function table.init(t, ...)
+    if table.getn(arg) == 0 then return end
+    for _, k in arg or {} do
+        if t[k] == nil then t[k] = 0 end
+    end
+end
+
+--- Returns filtered table containing every mapping from table for which fn function returns true when passed the value.
 --- @param t  - is a table to filter
 --- @param fn - is decision function to use to filter the table, defaults checking if a value is true or exists in table
+--- t1 = { 1 = 'one', 2 = 5, 3 = 10 }
+--- t2 = { A = 'one', B = 5, C = 10 }
+--- local function GreaterThan5(v) return v > 5 end
+--- table.filter(t1, GreaterThan5) => { 3 = 10 }
+--- table.filter(t2, GreaterThan5) => { C = 10 }
 function table.filter(t, fn)
     local r = {}
-    if not fn then fn = function(v) return v end end
+    if not fn then fn = function(v, k) return v end end
     for k, v in t do
-        if fn(v) then
+        if fn(v, k) then
             r[k] = v
         end
     end
     return r
+end 
+--- Perform an action function for each k,v pair in a given table
+--- t1 = { 1 = 1, 2 = 2, 3 = 3, 4 = 4 }
+--- t2 = { A = 1, B = 2, C = 3, D = 4 }
+--- local function IncreaseBy1(k, v) return v + 1 end
+--- table.foreach(t1, IncreaseBy1) => { 1 = 2, 2 = 3, 3 = 4, 4 = 5 }
+--- table.foreach(t2, IncreaseBy1) => { A = 2, B = 3, C = 4, D = 5 }
+function table.foreach(t, action)
+    if not action then return end
+    for k, v in t or {} do
+        action(k, v)
+    end
 end
 
 --- Returns total count of values that match fn function or if values exist in table
 --- @param fn is optional filtering function that is applied to each value of the table
+--- t1 = { 1 = 1, 2 = 2, 3 = 3, 4 = 4 }
+--- t2 = { A = 1, B = 2, C = 3, D = 4 }
+--- local GreaterThan3 = function(k, v) return v > 3 end
+--- table.count(t1, GreaterThan3) => 1
+--- table.count(t2, GreaterThan3) => 1
 function table.count(t, fn)
     if not t then return 0 end -- prevents looping over nil table
     if not fn then fn = function(v) return v end end
@@ -508,21 +711,82 @@ function table.count(t, fn)
 end
 
 --- Returns a new table with unique values stored using numeric keys and it does not preserve keys of the original table
+--- t1 = { 1 = false, 2 = 'v2', 3 = 'v2', 4 = 'v3' }
+--- t2 = { A = false, B = 'v2', C = 'v2', D = 'v3' }
+--- table.unique(t1) => { 1 = false, 2 = 'v1', 3 = 'v3' }
+--- table.unique(t2) => { 1 = false, 2 = 'v1', 3 = 'v3' }
 function table.unique(t)
     if not t then return end -- prevents looping over nil table
     local unique = {}
-    local ins = {}
+    local inserted = {}
     local n = 0
     for k, v in t do
-        if not ins[v] then
+        if not inserted[v] then
             n = n + 1
             unique[n] = v -- faster than table.insert(unique, v)
-            ins[v] = true
+            inserted[v] = true
         end
     end
-
     return unique
 end
+
+--- Returns differences between two specified tables by recursively comparing table's values and/or its sub-tables
+--- @param t1key is optional string for annotating difference in 1st table
+--- @param t2key is optional string for annotating difference in 2nd table
+--- @param showDeltaType is optional boolean that specifies whether to insert a type of difference between two values
+--- this function is useful for comparing large or complex tables (e.g. unit blueprints)
+function table.delta(t1, t2, t1key, t2key, showDeltaType)
+    if not t1key then t1key = 't1' end
+    if not t2key then t2key = 't2' end
+    local ret = {}
+    if type(t1) ~= 'table' or
+       type(t2) ~= 'table' then 
+        ret[t1key] = t1 or 'nil'
+        ret[t2key] = t2 or 'nil'
+        if showDeltaType then ret['delta'] = 'table' end
+        return ret 
+    end
+    -- local function for comparing two values of specified table key
+    local function compare(v1, v2, key)
+        -- skip comparing values if it was done on first pass
+        if ret[key] then return end
+        if type(v1) == 'table' and type(v1) == 'table' then
+            -- recursive call on two sub-tables
+            local differences = table.delta(v1, v2, t1key, t2key, showDeltaType)
+            if table.getsize(differences) > 0 then
+                ret[key] = differences
+            end
+        elseif v1 == nil or v2 == nil then 
+            if not ret[key] then ret[key] = {} end 
+            if v1 == nil then ret[key][t1key] = 'nil' else ret[key][t1key] = v1 end
+            if v2 == nil then ret[key][t2key] = 'nil' else ret[key][t2key] = v2 end
+            if showDeltaType then ret[key]['delta'] = 'nil' end
+        elseif type(v1) ~= type(v2) then 
+            if not ret[key] then ret[key] = {} end
+            ret[key][t1key] = v1
+            ret[key][t2key] = v2 
+            if showDeltaType then ret[key]['delta'] = 'type' end
+        elseif v1 ~= v2 then
+            if not ret[key] then ret[key] = {} end 
+            ret[key][t1key] = v1
+            ret[key][t2key] = v2 
+            if showDeltaType then ret[key]['delta'] = 'value' end
+        end
+    end 
+    -- compare values from table 1 to table 2
+    for k1,v1 in t1 do 
+        local v2 = t2[k1]
+        compare(v1, v2, k1)
+    end
+    -- compare values from table 2 to table 1
+    for k2,v2 in t2 do 
+        local v1 = t1[k2]
+        compare(v1, v2, k2)
+    end
+    return ret
+end
+
+-- TODO refactor 'Strings*' functions into strings.FunctionName like we do for table, math, bin functions above
 
 --- Returns items as a single string, separated by the delimiter
 function StringJoin(items, delimiter)
@@ -533,7 +797,7 @@ function StringJoin(items, delimiter)
     return str
 end
 
---- "explode" a string into a series of tokens, using a separator character `sep`
+--- Splits a string into a series of tokens, using a separator character `sep`
 function StringSplit(str, sep)
     local sep, fields = sep or ":", {}
     local pattern = string.format("([^%s]+)", sep)
@@ -590,16 +854,61 @@ end
 --- Capitalizes each word in specified string
 --- e.g. StringCapitalize('hello supreme commander') --> Hello Supreme Commander
 function StringCapitalize(str)
-    return string.gsub(" "..str, "%W%l", string.upper):sub(2)
+    local lower = string.lower(str)
+    return string.gsub(" "..lower, "%W%l", string.upper):sub(2)
 end
+
+
 --- Check if a given string starts with specified string
 function StringStarts(str, startString)
    return string.sub(str, 1, string.len(startString)) == startString
 end
+
 --- Check if a given string ends with specified string
 function StringEnds(str, endString)
    return endString == '' or string.sub(str, -string.len(endString)) == endString
 end
+
+--- Returns a new string without leading and trailing spaces
+function StringTrim(str)
+    local ret, count = string.gsub(str, "^%s*(.-)%s*$", "%1")
+    return ret
+end
+
+--- Returns a new string with spaces inserted on left side of passed string
+function StringPadLeft(str, finalLength)
+    finalLength = finalLength or 0
+    finalLength = finalLength - string.len(str)
+     
+    if finalLength > 0 then
+        str = string.rep(' ', finalLength) .. str
+    end
+    return str
+end
+--- Returns a new string with spaces inserted on right side of passed string
+function StringPadRight(str, finalLength)
+    finalLength = finalLength or 0
+    finalLength = finalLength - string.len(str)
+
+    if finalLength > 0 then
+        str = str .. string.rep(' ', finalLength)
+    end
+    return str
+end
+
+function StringQuote(str)
+    return '"' .. (str or 'nil') .. '"'
+end
+
+function StringContains(str, words)
+    for k, v in words or {} do
+        if string.find(str, v) then
+            return true
+        end
+    end
+    return false
+end
+
 --- Sorts two variables based on their numeric value or alpha order (strings)
 function Sort(itemA, itemB)
     if not itemA or not itemB then return 0 end
@@ -622,7 +931,7 @@ function Sort(itemA, itemB)
     end
 end
 
--- Rounds a number to specified double precision
+--- Rounds a number to specified double precision
 function math.round(num, idp)
     if not idp then
         return math.floor(num+.5)
@@ -634,6 +943,86 @@ end
 --- Clamps numeric value to specified Min and Max range
 function math.clamp(v, min, max)
     return math.max(min, math.min(max, v))
+end
+
+--- Initializes a value to 0 or returns its original value
+--- this is helpful to check for uninitialized numeric values in table
+function math.init(value)
+    if value == nil then return 0 else return value end
+end
+
+--- Abbreviates specified number to a short string, e.g. 240100 => 240.1k
+--- Note this function supports positive, negative, and small values, e.g. 0.25
+--- @param num is a number to abbreviate
+--- @param showSign is optional boolean to hide or show sign or the number
+--- math.abbr(240100, true)   => +240.1k
+--- math.abbr(240100, false)  => 240.1k
+--- math.abbr(-240100, false) => 240.1k
+function math.abbr(num, showSign)
+    if num == nil then return 0 end
+
+    -- store sign of the number for later
+    local isNegative = false
+    if num < 0 then
+       num = num * -1
+       isNegative = true
+       -- default to always show sign for negative numbers
+       if showSign == nil then showSign = true end
+    end
+
+    local str = ""
+    if num == 0 then
+        return 0
+    elseif num < .1 then
+        str = string.format("%1.2f", num)
+    elseif num < 50 then
+        if math.mod(num, 1) > 0 then 
+            str = string.format("%01.1f", num)
+        else 
+            str = string.format("%01.0f", num)
+        end
+    elseif num < 1000 then        -- 1k
+        str = string.format("%01.0f", num)
+    elseif num < 10000 then       -- 10k
+        str = string.format("%01.1fk", num / 1000)
+    elseif num < 100000 then      -- 100K
+        if math.mod(num, 1000) > 0 then 
+            str = string.format("%01.1fk", num / 1000)
+        else
+            str = string.format("%01.0fk", num / 1000)
+        end
+    elseif num < 1000000 then      -- 1m
+        str = string.format("%01.0fk", num / 1000)
+    elseif num < 10000000 then      -- 10m
+        str = string.format("%01.1fm", num / 1000000)
+    elseif num < 100000000 then    -- 100m
+        if math.mod(num, 1000000) > 0 then 
+            str = string.format("%01.1fm", num / 1000000)
+        else
+            str = string.format("%01.1fm", num / 1000000)
+        end
+    elseif num < 1000000000 then  -- 1b
+        str = string.format("%01.0fm", num / 1000000)
+    elseif num < 10000000000 then  -- 10b
+        str = string.format("%01.1fb", num / 1000000000)
+    elseif num < 100000000000 then  -- 100b
+        if math.mod(num, 1000000000) > 0 then 
+            str = string.format("%01.1fb", num / 1000000000)
+        else
+            str = string.format("%01.1fb", num / 1000000000)
+        end
+    else
+        str = string.format("%01.0fb", num / 1000000000)
+    end
+    -- restore sign of the number
+    if showSign then
+        if isNegative then
+            str = "-" .. str
+        else 
+            str = "+" .. str
+        end
+    end
+    return str
 end
 
 --- Creates timer for profiling task(s) and calculating time delta between consecutive function calls, e.g.
@@ -767,4 +1156,159 @@ function CreateTimer()
             end
          end
     }
+end
+
+-- global table with functions for operating on binary values
+bit = {}
+--- returns a number shifted left by specified number of bits, e.g. 20 << 1 == 40
+function bit.bshiftleft(number, bits)
+    return math.pow(number * 2, bits)
+end
+
+--- returns a number shifted right by specified number of bits, e.g. 20 >> 1 == 10
+function bit.bshiftright(number, bits)
+    return math.floor(number / math.pow(2, bits))
+end
+
+--- converts specified number or string to binary number, e.g. 2 => 10, '2' => 10
+function bit.tobinary(value)
+    local num = 0
+    local valueType = type(value)
+    if valueType == 'string' then
+        num = tonumber(value)
+    else
+        num = value
+    end
+     
+    if type(num) ~= 'number' then
+       WARN('cannot convert "' .. tostring(value).. '" of type "' .. valueType ..'" to binary number' )
+    elseif num == 0 or num == 1 then
+       return num -- skip binary conversion
+    else
+        local t = {}
+        while num > 0 do
+            rest = math.mod(num, 2)
+            table.insert(t, 1, tostring(rest))
+            num = (num - rest ) / 2
+        end
+        local binary = tonumber( table.concat(t))
+        if binary == nil then
+            WARN('failed converting "' .. num .. '" to binary number' )
+        else
+            return binary
+        end
+    end
+    return -1 -- return invalid binary
+end
+
+--- performs bitwise 'And' operation on A and B binary numbers
+function bit.band(a, b)
+    local result = 0
+    local binary = 1
+    while a > 0 and b > 0 do
+      -- check for the rightmost bits
+      if math.mod(a , 2) == 1 and math.mod(b, 2) == 1 then 
+          result = result + binary -- set the current bit
+      end
+      binary = binary * 2 -- shift left
+      a = math.floor(a / 2) -- shift right
+      b = math.floor(b / 2)
+    end
+    return result
+end
+
+--- check if A binary contains B binary using bitwise 'And' operation
+function bit.contains(a, b)
+    return bit.band(a, b) ~= 0
+end
+
+-- creating global table with functions for operating on global variables
+global = {}
+
+--- safely check if global variable/function exists without throwing errors
+function global.exist(name)
+    for key, val in _G do
+        if key == name then
+            return true
+        end
+    end
+    return false
+end
+
+--- prints types and names of all global variables/functions
+function global.vars()
+    local ret = {}
+    local utils = {'math', 'debug', 'debug'}
+    for name, items in _G or {} do 
+        local itemType = type(items)
+        if itemType == 'cfunction' then itemType = 'function' end 
+
+        if type(items) ~= 'table' then
+            table.insert(ret, itemType .. ' _G.' .. name ..'')
+        else
+            local first = table.firstValue(items)
+            local firstType = type(first)
+            if firstType == 'cfunction' then firstType = 'function' end 
+            if firstType == 'function' then 
+                for k, v in items do
+                    table.insert(ret, firstType .. ' _G.' .. name ..'.' .. k)
+                end
+            else 
+                local stats = table.size(items) .. ' ' .. firstType .. 's'
+                table.insert(ret, itemType .. ' _G.' .. name ..' with ' .. stats)
+            end
+        end 
+    end
+    table.sort(ret, function(a,b) return a < b end)
+    LOG('Global "_G" variable has ' .. table.size(ret) .. ' items:')
+    for _, info in ret do
+        LOG(info)
+    end
+end
+
+--- prints types and names of global modules that were already loaded using the import function
+function global.modules()
+    local ret = {}
+    for name, val in __modules or {} do 
+        if type(val) ~= 'table' then
+            table.insert(ret, '__modules.' .. name ..'')
+        else
+            local first = table.firstValue(val)
+
+            local stats = table.size(val) .. ' ' .. type(first) .. 's'
+            table.insert(ret, '__modules["' .. name ..'"] with ' .. stats)
+        end 
+    end
+    table.sort(ret, function(a,b) return a < b end)
+    LOG('Global "__modules" variable has ' .. table.size(ret) .. ' items:')
+    for _, info in ret do
+        LOG(info)
+    end
+end
+
+--- prints types and names of functions in moho global variable
+function global.moho()
+    local ret = {}
+    for name, items in moho or {} do 
+        if type(items) ~= 'table' then
+            table.insert(ret, 'moho.' .. name ..'')
+        else
+            local count = 0
+            for k, v in items do
+                if not string.find(k, '__') then 
+                    count = count + 1
+                    if type(v) == 'function' or type(v) == 'cfunction' then
+                        table.insert(ret, type(v) .. ' moho.' .. name ..':' .. k)
+                    else
+                        table.insert(ret, type(v) .. ' moho.' .. name ..'.' .. k)
+                    end
+                end
+            end
+        end 
+    end
+    table.sort(ret, function(a,b) return a < b end)
+    LOG('Global "moho" variable has ' .. table.size(ret) .. ' items:')
+    for _, info in ret do
+        LOG(info)
+    end
 end

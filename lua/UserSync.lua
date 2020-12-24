@@ -22,7 +22,7 @@ function OnSync()
     end
 
     --Play Sounds
-    for k, v in Sync.Sounds do
+    for k, v in Sync.Sounds or {} do -- HUSSAR added fix:  or {}
         PlaySound(Sound{ Bank=v.Bank, Cue=v.Cue })
     end
 
@@ -53,8 +53,8 @@ function OnSync()
     if not table.empty(Sync.UnitData) then
         UnitData = table.merged(UnitData,Sync.UnitData)
     end
-
-    for id, v in Sync.ReleaseIds do
+     -- HUSSAR added fix for nil reference exception
+    for id, v in Sync.ReleaseIds or {} do
         UnitData[id] = nil
     end
 

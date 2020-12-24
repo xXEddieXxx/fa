@@ -53,6 +53,7 @@ consoleTextBGColor = import('/lua/lazyvar.lua').Create()    -- console text back
 menuFontSize = import('/lua/lazyvar.lua').Create()          -- font size used on main in game escape menu
 factionTextColor = import('/lua/lazyvar.lua').Create()      -- faction color for text foreground
 factionBackColor = import('/lua/lazyvar.lua').Create()      -- faction color for text background
+factionSkinName = import('/lua/lazyvar.lua').Create()       -- faction name to identify current skin
 
 -- table of layouts supported by this skin, not a lazy var as we don't need updates
 layouts = nil
@@ -251,8 +252,9 @@ function SetCurrentSkin(skin, overrideTable)
         skin = 'uef'
         skinTable = skins[skin]
     end
-
+    
     currentSkin:Set(skin)
+    factionSkinName:Set(skin)
 
     tooltipTitleColor:Set(skinTable.tooltipTitleColor)
     tooltipBorderColor:Set(skinTable.tooltipBorderColor)
@@ -305,7 +307,7 @@ function SetCurrentSkin(skin, overrideTable)
             SetCurrentLayout(layouts[1])
         end
     end
-
+    
     Prefs.SetToCurrentProfile("skin", skin)
 end
 
