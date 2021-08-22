@@ -1881,3 +1881,16 @@ function DestroyRemainingTeleportChargingEffects(unit, EffectsBag)
         unit.TeleportCybranSphere:Destroy()
     end
 end
+
+--- Optimal implementations ---
+
+local EffectUtilsOpti = import("/lua/EffectUtilitiesOpti.lua")
+
+--- Attaches effects to an entity.
+-- @entity The entity to attach the effects to.
+-- @army The army that caused the effects.
+-- @effects The effects to attach.
+-- @accumulator A table that will be appended to, if defined. Useful for 
+-- performance if you need to attach various effects.
+-- @accCount The current number of elements in the output table.
+CreateEffectsOpti = EffectUtilsOpti.CreateEffectsOpti

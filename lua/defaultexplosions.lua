@@ -444,3 +444,7 @@ function OldCreateWreckageEffects(object)
         CreateEmitterAtEntity(object, object.Army, v):SetEmitterParam('LIFETIME', GetRandomFloat(100, 1000))
     end
 end
+
+--- Optimal implementations ---
+
+local DefaultExplosionsOpti = import("/lua/DefaultExplosionsOpti.lua")

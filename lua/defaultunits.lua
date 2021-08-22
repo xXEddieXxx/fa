@@ -1799,8 +1799,9 @@ AirUnit = Class(MobileUnit) {
         end
 
         if with == 'Water' then
+            LOG("OPTIMAL EFFECT CRASH")
             self:PlayUnitSound('AirUnitWaterImpact')
-            EffectUtil.CreateEffects(self, self.Army, EffectTemplate.DefaultProjectileWaterImpact)
+            EffectUtil.CreateEffectsOpti(self, self.Army, EffectTemplate.DefaultProjectileWaterImpact)
             self.shallSink = true
             self.colliderProj:Destroy()
             self.colliderProj = nil
