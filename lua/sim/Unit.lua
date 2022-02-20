@@ -1195,11 +1195,6 @@ Unit = Class(moho.unit_methods) {
         local layer = self.Layer
         self.Dead = true
 
-        -- destroy all weapon effects
-        for k = 1, self.WeaponCount do 
-            self.WeaponInstances[k].Trash:Destroy();
-        end
-
         -- Units killed while being invisible because they're teleporting should show when they're killed
         if self.TeleportFx_IsInvisible then
             self:ShowBone(0, true)
@@ -1822,12 +1817,6 @@ Unit = Class(moho.unit_methods) {
 
         WaitSeconds(utilities.GetRandomFloat(self.DestructionExplosionWaitDelayMin, self.DestructionExplosionWaitDelayMax))
 
-        if not self.BagsDestroyed then
-            self:DestroyAllBuildEffects()
-            self:DestroyAllTrashBags()
-            self.BagsDestroyed = true
-        end
-
         -- Stop any motion sounds we may have
         self:StopUnitAmbientSound('AmbientMove')
         self:StopUnitAmbientSound('AmbientMoveLand')
@@ -1977,6 +1966,7 @@ Unit = Class(moho.unit_methods) {
             v:Destroy()
         end
 
+        -- destroy all weapon manipulators / effects
         for k = 1, self.WeaponCount do 
             self.WeaponInstances[k].Trash:Destroy();
         end
