@@ -185,4 +185,69 @@ RangeOverlayParams = {
         Type = 2,
         Tooltip = "overlay_counter_intel",
     },
+
+    BuildPreview = {
+        key = 'BuildPreview',
+        Pref = 'BuildPreviewPref',
+        Label = 'Build / reclaim',
+        Categories = categories.ALLUNITS,
+        NormalColor = glowIntelNormal..'156f79',
+        SelectColor = glowIntelSelect..'29757e',
+        RolloverColor = glowIntelOver..'327880',
+        Inner = innerIntel,
+        Outer = outerIntel,
+        Type = 4,
+        OnChecked = function(self, value)
+            LOG("Got checked!")
+        end,
+        Tooltip = "overlay_radar",
+    },
+    DirectFirePreview = {
+        key = 'DirectFirePreview',
+        Pref = 'DirectFirePreviewPref',
+        Label = 'Direct fire',
+        Categories = categories.ALLUNITS,
+        NormalColor = glowIntelNormal..'3d7915',
+        SelectColor = glowIntelSelect..'4b7e29',
+        RolloverColor = glowIntelOver..'518032',
+        Inner = innerIntel,
+        Outer = outerIntel,
+        Type = 4,
+        OnChecked = function(self, value)
+            LOG("Got checked!")
+        end,
+        Tooltip = "overlay_sonar",
+    },
+    AntiAirPreview = {
+        key = 'AntiAirPreview',
+        Pref = 'AntiAirPreviewPref',
+        Label = 'Anti air',
+        Categories = categories.ALLUNITS,
+        NormalColor = glowIntelNormal..'801616',
+        SelectColor = glowIntelSelect..'802a2a',
+        RolloverColor = glowIntelOver..'803232',
+        Inner = innerIntel,
+        Outer = outerIntel,
+        Type = 4,
+        OnChecked = function(self, value)
+            LOG("Got checked!")
+        end,
+        Tooltip = "overlay_omni",
+    },
+    CounterMeasuresPreview = {
+        key = 'CounterMeasuresPreview',
+        Pref = 'CounterMeasuresPreviewPref',
+        Label = 'Counter measures',
+        Categories = categories.ALLUNITS,
+        NormalColor = glowIntelNormal..'804516',
+        SelectColor = glowIntelSelect..'80502a',
+        RolloverColor = glowIntelOver..'805532',
+        Inner = innerIntel,
+        Outer = outerIntel,
+        Type = 4,
+        OnChecked = function(self, value)
+            LOG("Got checked!")
+        end,
+        Tooltip = "overlay_counter_intel",
+    },
 }

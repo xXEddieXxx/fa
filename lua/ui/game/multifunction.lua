@@ -560,6 +560,7 @@ function CreateFilterDropout(parent)
 
     local weaponFilters = {}
     local intelFilters = {}
+    local previewFilters = { }
     for _, data in filters do
         if data.Type == 1 then
             table.insert(weaponFilters, data)
@@ -568,6 +569,12 @@ function CreateFilterDropout(parent)
     for _, data in filters do
         if data.Type == 2 then
             table.insert(intelFilters, data)
+        end
+    end
+
+    for _, data in filters do
+        if data.Type == 4 then
+            table.insert(previewFilters, data)
         end
     end
 
@@ -585,6 +592,7 @@ function CreateFilterDropout(parent)
 
     table.sort(weaponFilters, SortFunc)
     table.sort(intelFilters, SortFunc)
+    table.sort(previewFilters, SortFunc)
 
     bg.items = {}
 
@@ -717,8 +725,13 @@ function CreateFilterDropout(parent)
             end
             activeFilters[self.Data.key] = nil
         end
+
         if self.Data.Pref then
-            ConExecute(self.Data.Pref..' '..tostring(self.checked))
+            if self.Data.OnChecked then 
+                self.Data.OnChecked(self, self.checked)
+            else 
+                ConExecute(self.Data.Pref..' '..tostring(self.checked))
+            end
             Prefs.SetToCurrentProfile(self.Data.Pref, self.checked)
         end
     end
@@ -888,10 +901,12 @@ function CreateFilterDropout(parent)
     index, maxWidth = ProcessItems(filterConditionals, index, maxWidth, '<LOC filters_0002>Conditions', 3, "overlay_conditions")
     index, maxWidth = ProcessItems(weaponFilters, index, maxWidth, '<LOC filters_0000>Military', 1, "overlay_military")
     index, maxWidth = ProcessItems(intelFilters, index, maxWidth, '<LOC filters_0001>Intel', 2, "overlay_intel")
+    index, maxWidth = ProcessItems(previewFilters, index, maxWidth, 'Range previews', 4, "overlay_intel")
 
     SetTitleCheck(1)
     SetTitleCheck(2)
     SetTitleCheck(3)
+    SetTitleCheck(4)
 
     local totalHeight = 0
     for _, filter in bg.items do
