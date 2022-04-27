@@ -350,7 +350,7 @@ AIBrain = Class(moho.aibrain_methods) {
             local energyTrend = 10 * self:GetEconomyTrend('ENERGY')
 
             -- low on storage and insufficient energy income, disable fabricators
-            if energyStoredRatio < 0.4 and energyTrend < 0 then 
+            if energyStoredRatio < 0.8 and energyTrend < 0 then 
 
                 -- while we have fabricators to disable
                 for fabricator, _ in self.EnergyExcessUnitsEnabled do 
@@ -369,7 +369,7 @@ AIBrain = Class(moho.aibrain_methods) {
             end
 
             -- high on storage and sufficient energy income, enable fabricators
-            if energyStoredRatio > 0.6 and energyTrend > 100 then 
+            if energyStoredRatio > 0.90 and energyTrend > 100 then 
 
                 -- while we have fabricators to retrieve
                 for fabricator, _ in self.EnergyExcessUnitsDisabled do
