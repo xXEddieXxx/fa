@@ -14,7 +14,6 @@ BuffField = Class(Entity) {
     -- Change these in an inheriting class if you want
     FieldVisualEmitter = '', -- the FX on the unit that carries the buff field
 
-    -- EVENTS
     OnCreated = function(self)
         -- Fires when the field is initalised
         local bp = self:GetBlueprint()
@@ -52,7 +51,7 @@ BuffField = Class(Entity) {
         end
     end,
 
-    -- ACTUAL CODE (dont change anything)
+    -- Called by class initialisation
     __init = function(self, spec)
         Entity.__init(self, spec)
         self.Name = spec.Name or 'NoName'
@@ -65,7 +64,10 @@ BuffField = Class(Entity) {
         self.ThreadHandle = false
     end,
 
+    -- Called by the entity class
     OnCreate = function(self)
+        LOG("Created buff field")
+        LOG(repr(debug.traceback()))
         local Owner = self:GetOwner()
         local bp = self:GetBlueprint()
 

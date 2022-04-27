@@ -5,7 +5,6 @@
 --  Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
 ------------------------------------------------------------------
 
-local Entity = import('/lua/sim/Entity.lua').Entity
 local Explosion = import('/lua/defaultexplosions.lua')
 local DefaultDamage = import('/lua/sim/defaultdamage.lua')
 local Flare = import('/lua/defaultantiprojectile.lua').Flare
@@ -98,7 +97,7 @@ end
 -- cache categories computations
 local CategoriesDoNotCollide = categories.TORPEDO + categories.MISSILE + categories.DIRECTFIRE
 
-Projectile = Class(moho.projectile_methods, Entity) {
+Projectile = Class(moho.projectile_methods) {
 
     Cache = false,
 
@@ -250,10 +249,6 @@ Projectile = Class(moho.projectile_methods, Entity) {
         end
     end,
 
-    -- Do not call the base class __init and __post_init, we already have a c++ object
-    __init = false,
-    __post_init = false,
-
     DestroyOnImpact = true,
     FxImpactTrajectoryAligned = true,
 
@@ -290,9 +285,9 @@ Projectile = Class(moho.projectile_methods, Entity) {
             return nil
         end
     end,
-
+    
+    -- Called by the engine
     OnCreate = function(self, inWater)
-
         local blueprint = EntityGetBlueprint(self)
 
         -- populate blueprint cache if we haven't done that yet
@@ -754,11 +749,9 @@ Projectile = Class(moho.projectile_methods, Entity) {
 
 --- A dummy projectile that solely inherits what it needs. Useful for 
 -- effects that require projectiles without additional overhead.
-DummyProjectile = Class(moho.projectile_methods, Entity) {
+DummyProjectile = Class(moho.projectile_methods) {
 
     Cache = false,
-    __init = false,
-    __post_init = false,
 
     OnCreate = function(self, inWater)
 
@@ -781,3 +774,7 @@ DummyProjectile = Class(moho.projectile_methods, Entity) {
         self:Destroy()
     end,
 }
+
+-- backwards compatibility with mods
+
+local Entity = import('/lua/sim/Entity.lua').Entity

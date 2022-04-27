@@ -116,7 +116,9 @@ for k, bp in __blueprints do
     end
 end
 
-Shield = Class(moho.shield_methods, Entity) {
+Shield = Class(moho.shield_methods) {
+
+    -- Called during class initialisation
     __init = function(self, spec, owner)
         -- This key deviates in name from the blueprints...
         spec.Size = spec.ShieldSize
@@ -126,9 +128,14 @@ Shield = Class(moho.shield_methods, Entity) {
         spec.Owner = owner
 
         _c_CreateShield(self, spec)
+
+        self.OnCreate(self, spec)
     end,
 
+    -- Not called by the engine, we call it during __init
     OnCreate = function(self, spec)
+        LOG("OnCreate")
+
         -- cache information that is used frequently
         self.Army = EntityGetArmy(self)
         self.EntityId = EntityGetEntityId(self)

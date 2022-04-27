@@ -37,10 +37,13 @@ local function ParsePriorities()
 end
 
 Weapon = Class(moho.weapon_methods) {
+
+    -- Called during class initialisation
     __init = function(self, unit)
         self.unit = unit
     end,
 
+    -- Called by the engine
     OnCreate = function(self)
 
         -- -- Cache access patterns, see benchmark on metatables

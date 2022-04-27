@@ -6,7 +6,6 @@
 -----------------------------------------------------------------
 
 -- Imports. Localise commonly used subfunctions for speed
-local Entity = import('/lua/sim/Entity.lua').Entity
 local EffectTemplate = import('/lua/EffectTemplates.lua')
 local explosion = import('/lua/defaultexplosions.lua')
 
@@ -209,9 +208,8 @@ Unit = Class(moho.unit_methods) {
         }
     end,
 
+    -- Called by the engine
     OnCreate = function(self)
-        Entity.OnCreate(self)   
-
         local blueprint = self:GetBlueprint()
 
         -- populate blueprint cache if we haven't done that yet
@@ -4648,3 +4646,6 @@ DummyUnit = Class(moho.unit_methods) {
     CheckAssistFocus = function(self) end,
     UpdateAssistersConsumption = function (self) end,
 }
+
+-- backwards compatibility with mods
+local Entity = import('/lua/sim/Entity.lua').Entity
