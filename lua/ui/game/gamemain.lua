@@ -234,7 +234,7 @@ function CreateUI(isReplay)
         local clients = GetSessionClients()
         if table.getsize(clients) <= 1 then
             -- No need for unnecessary lag when playing alone
-            ConExecute('net_lag 0')
+            -- ConExecute('net_lag 0')
         end
     end
 
