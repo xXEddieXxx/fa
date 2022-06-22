@@ -338,6 +338,7 @@ UnitBlueprint {
             SlavedToBody = true,
             SlavedToBodyArcRange = 135,
             TargetPriorities = {
+                'NAVAL MOBILE TECH3',
                 'NAVAL MOBILE',
                 'ALLUNITS'
             },
@@ -439,6 +440,7 @@ UnitBlueprint {
             SlavedToBody = true,
             SlavedToBodyArcRange = 135,
             TargetPriorities = {
+                'NAVAL MOBILE TECH3',
                 'NAVAL MOBILE',
                 'ALLUNITS'
             },
@@ -539,6 +541,7 @@ UnitBlueprint {
             SlavedToBody = true,
             SlavedToBodyArcRange = 135,
             TargetPriorities = {
+                'NAVAL MOBILE TECH3',
                 'NAVAL MOBILE',
                 'ALLUNITS'
             },
