@@ -2,10 +2,7 @@ UnitBlueprint {
     AI = {
         GuardScanRadius = 26, -- allows for factory reclaim bug 
         TargetBones = {
-            'Panel_01',
-            'Panel_02',
-            'Panel_03',
-            'Panel_04',
+            'UAL0105', -- hovers sufficiently from the ground
         },
     },
     Audio = {
@@ -275,8 +272,8 @@ UnitBlueprint {
         TurnFacingRate = 120,
         TurnRadius = 0,
         TurnRate = 120,
-        WobbleFactor = 0,
-        WobbleSpeed = 0,
+        WobbleFactor = 0.015,
+        WobbleSpeed = 0.005,
     },
     SelectionCenterOffsetX = 0,
     SelectionCenterOffsetY = -0.5,

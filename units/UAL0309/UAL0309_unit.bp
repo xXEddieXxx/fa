@@ -2,9 +2,7 @@ UnitBlueprint {
     AI = {
         GuardScanRadius = 26, -- allows for factory reclaim bug 
         TargetBones = {
-            'Spinner_01',
-            'Spinner_02',
-            'Spinner_03',
+            'UAL0309',
         },
     },
     Audio = {

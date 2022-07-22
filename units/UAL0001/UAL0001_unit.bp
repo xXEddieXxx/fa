@@ -4,11 +4,7 @@ UnitBlueprint {
         GuardScanRadius = 36.75, -- Hardcoded to keep a sensible 'attack while assisting'/stop far away ratio
         TargetBones = {
             'Head',
-            'Right_Arm_B01',
-            'Left_Arm_B01',
             'Torso',
-            'Left_Leg_B01',
-            'Right_Leg_B01',
         },
     },
     Audio = {
