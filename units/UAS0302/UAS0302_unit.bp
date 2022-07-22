@@ -5,6 +5,8 @@ UnitBlueprint {
         TargetBones = {
             'UAS0302',
             'Turret_Middle',
+            'Turret_Front',
+            'Turret_Back',
             'Exhaust01',
             'Exhaust02',
         },

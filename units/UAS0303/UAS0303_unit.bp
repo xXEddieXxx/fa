@@ -7,8 +7,6 @@ UnitBlueprint {
         StagingPlatformScanRadius = 300,
         TargetBones = {
             'UAS0303',
-            'Exhaust01',
-            'Exhaust02',
         },
     },
     Audio = {

@@ -1,10 +1,14 @@
 UnitBlueprint {
     AI = {
         TargetBones = {
-            'UAS0401',
-            'Turret',
-            'Pontoon',
-            'Door',
+            'Pontoon001',
+            'Pontoon002',
+            'Pontoon003',
+            'Pontoon004',
+            'Pontoon005',
+            'Pontoon006',
+            'Pontoon007',
+            'Pontoon008',
         },
     },
     Audio = {

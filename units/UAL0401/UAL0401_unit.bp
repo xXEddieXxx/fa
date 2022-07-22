@@ -1,15 +1,7 @@
 UnitBlueprint {
     AI = {
         TargetBones = {
-            'Torso',
-            'Head_Muzzle',
-            'Projectile01',
-            'Left_Leg_B01',
-            'Right_Leg_B01',
-        },
-        AddTargetBones = {
-            'AttachSpecial01',
-            'AttachSpecial02',
+            'UAL0401',
         },
     },
     Audio = {
