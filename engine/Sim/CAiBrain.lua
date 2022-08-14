@@ -6,6 +6,12 @@ local CAiBrain = {}
 ---@alias BrainArcType 'high' | 'low' | 'none'
 ---@alias BrainThreatType 'Overall' | 'OverallNotAssigned' | 'StructuresNotMex' | 'Structures' | 'Naval' | 'Air' | 'Land' | 'Experimental' | 'Commander' | 'Artillery' | 'AntiAir' | 'AntiSurface' | 'AntiSub' | 'Economy' | 'Unknown'
 
+--- Adds an army statistic
+---@param statname string
+---@param val string | number
+function CAiBrain:AddArmyStat(statname,val)
+end
+
 --- Assigns a threat value to a given position, which is applied to the iMAP threat grid
 ---@param position Position
 ---@param threat number
@@ -32,7 +38,7 @@ end
 --- Order a unit to build a structure
 ---@param builder Unit
 ---@param blueprintID string
----@param buildLocation Position
+---@param buildLocation { [1]: number, [2]: number, [3]: number } # x,z location and rotation
 ---@param buildRelative boolean if true, the location is used as an offset to the builders current location
 function CAiBrain:BuildStructure(builder, blueprintID, buildLocation, buildRelative)
 end
